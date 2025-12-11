@@ -1,0 +1,141 @@
+/* Основные стили для слайдера */
+.sliderContainer {
+	composes: reviewsCarousel;
+}
+
+.slider {
+	position: relative;
+	overflow: visible;
+}
+
+.slider::before,
+.slider::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	width: 30px;
+	height: 100%;
+	z-index: 2;
+	pointer-events: none;
+}
+
+.slider::before {
+	left: 0;
+	background: linear-gradient(to right, #0c0b09, #231b18, #d7ac8a);
+}
+
+.slider::after {
+	right: 0;
+	background: linear-gradient(to right, #d7ac8a, #231b18, #0c0b09);
+}
+
+/* Контейнер слайда */
+.slide {
+	padding-right: 20px;
+}
+
+/* Карточка отзыва */
+.reviewCard {
+	composes: reviewCard;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	padding: 20px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reviewCard:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* Заголовок отзыва */
+.reviewHeader {
+	composes: reviewHeader;
+	margin-bottom: 16px;
+	padding-bottom: 12px;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.userName {
+	composes: reviewHeader h5;
+	font-size: 1.2rem;
+	line-height: 1.4;
+}
+
+.date {
+	composes: reviewHeader small;
+	font-size: 0.9rem;
+	opacity: 0.7;
+}
+
+/* Рейтинг */
+.rating {
+	composes: rating;
+	display: flex;
+	gap: 4px;
+	margin-bottom: 16px;
+}
+
+.ratingIcon {
+	width: 20px;
+	height: 20px;
+}
+
+/* Текст отзыва */
+.reviewText {
+	font-size: 1rem;
+	line-height: 1.5;
+	color: #4a5568;
+	flex-grow: 1;
+	overflow: hidden;
+}
+
+/* Тэги */
+.tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin-top: 16px;
+}
+
+.tag {
+	background-color: rgba(145, 24, 39, 0.1);
+	color: #911827;
+	padding: 4px 8px;
+	border-radius: 4px;
+	font-size: 0.8rem;
+	font-weight: 500;
+}
+
+/* Платформа */
+.platform {
+	display: inline-block;
+	margin-top: 8px;
+	font-size: 0.85rem;
+	color: #666;
+	font-weight: 500;
+}
+
+/* Медиа-запросы для адаптивности */
+@media (max-width: 640px) {
+	.reviewCard {
+		padding: 16px;
+	}
+
+	.userName {
+		font-size: 1.1rem;
+	}
+
+	.reviewText {
+		font-size: 0.95rem;
+	}
+}
+
+@media (max-width: 768px) {
+	.slider::before,
+	.slider::after {
+		width: 20px;
+	}
+}

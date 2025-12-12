@@ -3,6 +3,7 @@ import Link from 'next/link'
 import React, { ReactNode } from 'react'
 
 interface Props {
+	disabled?: boolean
 	className?: string
 	text?: string
 	link?: string

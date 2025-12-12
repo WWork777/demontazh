@@ -1,6 +1,7 @@
 'use client'
+import { cn } from '@/lib/utils'
 import Link from 'next/link'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
 	FaClock,
 	FaEnvelope,
@@ -11,13 +12,69 @@ import {
 } from 'react-icons/fa'
 import { RxCross1 } from 'react-icons/rx'
 
-interface ConectionModalProps {
+interface ConnectionModalProps {
 	isOpen: boolean
 	onClose: () => void
 }
 
-const ConectionModal = ({ isOpen, onClose }: ConectionModalProps) => {
+const ConnectionModal = ({ isOpen, onClose }: ConnectionModalProps) => {
 	const modalRef = useRef<HTMLDivElement>(null)
+	const [selectedMessenger, setSelectedMessenger] = useState<
+		'telegram' | 'whatsapp'
+	>('telegram')
+
+	// Телефон и контакты
+	const phoneNumber = '79991234567'
+	const formattedPhone = phoneNumber.replace(
+		/(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})/,
+		'+$1 ($2) $3-$4-$5'
+	)
+	const telegramLink = `https://t.me/${phoneNumber.replace('+', '')}`
+	const whatsappLink = `https://wa.me/${phoneNumber.replace('+', '')}`
+	const email = 'info@example.com'
+	const address = 'г. Уран-Батор, пл. Бабаясина д. 123'
+	const workHours = 'Пн-Пт: 9:00-18:00'
+
+	// Формирование сообщения
+	const createMessage = () => {
+		return `📱 Запрос на связь\n\n👤 Клиент заинтересован в наших услугах\n📞 Телефон: ${formattedPhone}\n📅 Дата обращения: ${new Date().toLocaleString(
+			'ru-RU'
+		)}`
+	}
+
+	// Отправка в Telegram
+	const sendToTelegram = () => {
+		const message = createMessage()
+		const botToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN
+		const chatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID
+
+		if (botToken && chatId) {
+			fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					chat_id: chatId,
+					text: message,
+					parse_mode: 'HTML',
+				}),
+			})
+		} else {
+			const url = `https://t.me/share/url?url=&text=${encodeURIComponent(
+				message
+			)}`
+			window.open(url, '_blank')
+		}
+	}
+
+	// Отправка в WhatsApp
+	const sendToWhatsApp = () => {
+		const message = createMessage()
+		const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ''
+		const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+			message
+		)}`
+		window.open(url, '_blank')
+	}
 
 	// Закрытие модального окна по клику вне его области и клавише Escape
 	useEffect(() => {
@@ -49,197 +106,161 @@ const ConectionModal = ({ isOpen, onClose }: ConectionModalProps) => {
 		}
 	}, [isOpen, onClose])
 
-	// Телефон и контакты
-	const phoneNumber = '79991234567'
-	const telegramLink = `https://t.me/${phoneNumber.replace('+', '')}`
-	const whatsappLink = `https://wa.me/${phoneNumber.replace('+', '')}`
-	const email = 'info@example.com'
-	const address = 'г. Уран-Батор, пл. Бабаясина д. 123'
-	const workHours = 'Пн-Пт: 9:00-18:00'
-
 	if (!isOpen) return null
 
 	return (
 		<>
-			{/* Оверлей с затемнением */}
-			<div className='fixed inset-0 bg-black/50 z-40' />
-
-			<div className='fixed inset-0 flex items-center justify-center z-50 p-4'>
+			<div className='fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4'>
 				<div
 					ref={modalRef}
-					className='bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto animate-scale-in shadow-2xl'
+					className='relative w-full max-w-md border border-black rounded-[20px] bg-white'
 				>
 					{/* Заголовок модального окна */}
-					<div className='flex justify-between items-center p-6 border-b sticky top-0 bg-white z-10'>
-						<h3 className='text-2xl font-bold text-gray-800'>
-							Связаться с нами
-						</h3>
-						<button
-							onClick={onClose}
-							className='text-gray-400 hover:text-gray-600 transition-colors p-1 hover:bg-gray-100 rounded-full cursor-pointer'
-							aria-label='Закрыть'
-						>
-							<RxCross1 className='size-6 text-(--accent-color2)' />
-						</button>
+					<div className='p-4 border-b border-gray-200'>
+						<div className='flex items-center justify-between'>
+							<h3 className='text-xl font-bold text-gray-900'>
+								Связаться с нами
+							</h3>
+							<button
+								onClick={onClose}
+								className='p-1 text-gray-500 hover:text-gray-700 transition-colors'
+								aria-label='Закрыть'
+							>
+								<RxCross1 className='size-5' />
+							</button>
+						</div>
+						<p className='text-gray-600 mt-1 text-sm'>
+							Выберите удобный способ связи
+						</p>
 					</div>
 
-					{/* Тело модального окна с контактами */}
-					<div className='p-6 space-y-6'>
+					{/* Контент модального окна */}
+					<div className='p-4 space-y-4'>
 						{/* Основные контакты */}
-						<div className='space-y-4'>
-							<div className='flex items-center gap-3'>
-								<div className='bg-blue-100 p-3 rounded-full'>
-									<FaPhoneAlt className='text-blue-600 size-5' />
+						<div className='bg-(--layer-color) rounded-[10px] border border-gray-200 p-3'>
+							<div className='grid grid-cols-1 gap-3'>
+								<div className='flex items-center gap-3'>
+									<FaPhoneAlt className='text-(--accent-color1) size-4 shrink-0' />
+									<div className='flex-1'>
+										<p className='text-xs text-gray-500'>Телефон</p>
+										<a
+											href={`tel:${phoneNumber}`}
+											className='text-sm font-semibold text-gray-800 hover:text-(--accent-color1) transition-colors'
+										>
+											{formattedPhone}
+										</a>
+									</div>
 								</div>
-								<div>
-									<p className='text-sm text-gray-500'>Телефон</p>
-									<a
-										href={`tel:${phoneNumber}`}
-										className='text-lg font-semibold text-gray-800 hover:text-blue-600 transition-colors'
-									>
-										{phoneNumber.replace(
-											/(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})/,
-											'+$1 ($2) $3-$4-$5'
-										)}
-									</a>
-								</div>
-							</div>
 
-							<div className='flex items-center gap-3'>
-								<div className='bg-green-100 p-3 rounded-full'>
-									<FaEnvelope className='text-green-600 size-5' />
+								<div className='flex items-center gap-3'>
+									<FaEnvelope className='text-(--accent-color1) size-4 shrink-0' />
+									<div className='flex-1'>
+										<p className='text-xs text-gray-500'>Email</p>
+										<a
+											href={`mailto:${email}`}
+											className='text-sm font-semibold text-gray-800 hover:text-(--accent-color1) transition-colors'
+										>
+											{email}
+										</a>
+									</div>
 								</div>
-								<div>
-									<p className='text-sm text-gray-500'>Email</p>
-									<a
-										href={`mailto:${email}`}
-										className='text-lg font-semibold text-gray-800 hover:text-green-600 transition-colors'
-									>
-										{email}
-									</a>
-								</div>
-							</div>
 
-							<div className='flex items-center gap-3'>
-								<div className='bg-purple-100 p-3 rounded-full'>
-									<FaMapMarkerAlt className='text-purple-600 size-5' />
+								<div className='flex items-center gap-3'>
+									<FaMapMarkerAlt className='text-(--accent-color1) size-4 shrink-0' />
+									<div className='flex-1'>
+										<p className='text-xs text-gray-500'>Адрес</p>
+										<p className='text-sm font-semibold text-gray-800'>
+											{address}
+										</p>
+									</div>
 								</div>
-								<div>
-									<p className='text-sm text-gray-500'>Адрес</p>
-									<p className='text-lg font-semibold text-gray-800'>
-										{address}
-									</p>
-								</div>
-							</div>
 
-							<div className='flex items-center gap-3'>
-								<div className='bg-yellow-100 p-3 rounded-full'>
-									<FaClock className='text-yellow-600 size-5' />
-								</div>
-								<div>
-									<p className='text-sm text-gray-500'>Режим работы</p>
-									<p className='text-lg font-semibold text-gray-800'>
-										{workHours}
-									</p>
+								<div className='flex items-center gap-3'>
+									<FaClock className='text-(--accent-color1) size-4 flex-shrink-0' />
+									<div className='flex-1'>
+										<p className='text-xs text-gray-500'>Режим работы</p>
+										<p className='text-sm font-semibold text-gray-800'>
+											{workHours}
+										</p>
+									</div>
 								</div>
 							</div>
 						</div>
 
-						{/* Кнопки мессенджеров */}
-						<div className='space-y-4'>
-							<h4 className='text-xl font-semibold text-gray-800 text-center'>
-								Напишите нам в мессенджер
-							</h4>
-
-							<div className='grid grid-cols-2 gap-4'>
-								{/* Telegram кнопка */}
-								<a
-									href={telegramLink}
-									target='_blank'
-									rel='noopener noreferrer'
-									className='flex items-center justify-center gap-3 bg-blue-500 text-white py-4 px-6 rounded-xl hover:bg-blue-600 transition-colors font-semibold'
+						{/* Выбор мессенджера */}
+						<div>
+							<p className='text-sm font-medium text-gray-700 mb-2'>
+								Написать в мессенджер
+							</p>
+							<div className='grid grid-cols-2 gap-3'>
+								<button
+									type='button'
+									onClick={() => setSelectedMessenger('telegram')}
+									className={cn(
+										'p-3 border-2 rounded-[10px] flex flex-col items-center justify-center space-y-2 transition-all',
+										selectedMessenger === 'telegram'
+											? 'border-(--accent-color1) bg-(--accent-color1)/5'
+											: 'border-gray-200 hover:border-gray-300'
+									)}
 								>
-									<FaTelegramPlane className='size-6' />
-									<span>Telegram</span>
-								</a>
+									<FaTelegramPlane className='size-6 text-blue-500' />
+									<span className='text-sm font-medium'>Telegram</span>
+								</button>
 
-								{/* WhatsApp кнопка */}
-								<a
-									href={whatsappLink}
-									target='_blank'
-									rel='noopener noreferrer'
-									className='flex items-center justify-center gap-3 bg-green-500 text-white py-4 px-6 rounded-xl hover:bg-green-600 transition-colors font-semibold'
+								<button
+									type='button'
+									onClick={() => setSelectedMessenger('whatsapp')}
+									className={cn(
+										'p-3 border-2 rounded-[10px] flex flex-col items-center justify-center space-y-2 transition-all',
+										selectedMessenger === 'whatsapp'
+											? 'border-green-500 bg-green-50'
+											: 'border-gray-200 hover:border-gray-300'
+									)}
 								>
-									<FaWhatsapp className='size-6' />
-									<span>WhatsApp</span>
-								</a>
+									<FaWhatsapp className='size-6 text-green-500' />
+									<span className='text-sm font-medium'>WhatsApp</span>
+								</button>
 							</div>
 						</div>
 
-						{/* Дополнительная информация */}
-						<div className='bg-gray-50 rounded-xl p-4'>
-							<h5 className='font-semibold text-gray-800 mb-2'>
-								Почему стоит связаться с нами:
-							</h5>
-							<ul className='space-y-2 text-gray-600'>
-								<li className='flex items-start gap-2'>
-									<span className='text-green-500 mt-1'>✓</span>
-									<span>Бесплатная консультация</span>
-								</li>
-								<li className='flex items-start gap-2'>
-									<span className='text-green-500 mt-1'>✓</span>
-									<span>Быстрый ответ в мессенджерах</span>
-								</li>
-								<li className='flex items-start gap-2'>
-									<span className='text-green-500 mt-1'>✓</span>
-									<span>Профессиональные специалисты</span>
-								</li>
-								<li className='flex items-start gap-2'>
-									<span className='text-green-500 mt-1'>✓</span>
-									<span>Гибкие условия работы</span>
-								</li>
-							</ul>
+						{/* Прямые ссылки на мессенджеры */}
+						<div className='space-y-2'>
+							<a
+								href={telegramLink}
+								target='_blank'
+								rel='noopener noreferrer'
+								className='block w-full text-center py-2.5 border border-gray-300 rounded-[10px] text-gray-700 font-medium hover:border-gray-400 transition-colors'
+							>
+								Перейти в Telegram
+							</a>
+							<a
+								href={whatsappLink}
+								target='_blank'
+								rel='noopener noreferrer'
+								className='block w-full text-center py-2.5 border border-gray-300 rounded-[10px] text-gray-700 font-medium hover:border-gray-400 transition-colors'
+							>
+								Перейти в WhatsApp
+							</a>
 						</div>
 
-						{/* Ссылки на политики */}
-						<p className='text-xs text-gray-500 text-center'>
-							Нажимая на кнопки, вы соглашаетесь с{' '}
-							<Link
-								href='/privacy'
-								className='text-blue-600 hover:underline font-medium'
-							>
-								политикой конфиденциальности
-							</Link>{' '}
-							и{' '}
-							<Link
-								href='/terms'
-								className='text-blue-600 hover:underline font-medium'
-							>
-								обработкой персональных данных
-							</Link>
-						</p>
+						{/* Информация о конфиденциальности */}
+						<div className='pt-4 border-t border-gray-200'>
+							<p className='text-xs text-gray-500 text-center'>
+								Нажимая на кнопки, вы соглашаетесь с{' '}
+								<Link
+									href='/privacy'
+									className='text-(--accent-color1) hover:underline font-medium'
+								>
+									политикой конфиденциальности
+								</Link>{' '}
+								и даете согласие на обработку персональных данных
+							</p>
+						</div>
 					</div>
 				</div>
 			</div>
-
-			<style jsx>{`
-				@keyframes scale-in {
-					0% {
-						opacity: 0;
-						transform: scale(0.9);
-					}
-					100% {
-						opacity: 1;
-						transform: scale(1);
-					}
-				}
-
-				.animate-scale-in {
-					animation: scale-in 0.3s ease-out forwards;
-				}
-			`}</style>
 		</>
 	)
 }
 
-export default ConectionModal
+export default ConnectionModal

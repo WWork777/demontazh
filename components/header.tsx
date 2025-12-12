@@ -446,7 +446,7 @@ export const Header: React.FC<Props> = ({ className }) => {
 	return (
 		<>
 			<header className={cn(className, 'py-3 px-2 md:px-3')}>
-				<div className='container mx-auto flex items-center justify-around lg:justify-between'>
+				<div className='md:container px-2 md:px-0 mx-auto flex items-center justify-between'>
 					{/* Логотип */}
 					<Link
 						href={'/'}

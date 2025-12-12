@@ -1,4 +1,5 @@
 import { About } from '@/components/about'
+import { Calculator } from '@/components/calculator'
 import { Footer } from '@/components/footer'
 import { Header } from '@/components/header'
 import { Hero } from '@/components/hero'
@@ -15,6 +16,7 @@ export default function Home() {
 			<About />
 			<Stages />
 			<Services />
+			<Calculator />
 			<Questions />
 			<Reviews />
 			<Footer />

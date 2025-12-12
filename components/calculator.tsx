@@ -987,9 +987,9 @@ export const Calculator: React.FC<Props> = ({ className }) => {
 						</div>
 
 						{/* Информационные блоки с тарифами и коэффициентами - внизу на одном уровне */}
-						<div className='grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8'>
+						<div className='grid grid-cols-1 lg:grid-cols-12 gap-6'>
 							{/* Блок тарифов для типа работ */}
-							<div className='lg:col-span-4 p-4 bg-gray-50 rounded-lg border border-gray-200'>
+							{/* <div className='lg:col-span-4 p-4 bg-gray-50 rounded-lg border border-gray-200'>
 								<h3 className='text-lg font-semibold mb-2 text-(--accent-color1)'>
 									Тарифы работ
 								</h3>
@@ -1015,10 +1015,10 @@ export const Calculator: React.FC<Props> = ({ className }) => {
 										</ul>
 									</div>
 								</div>
-							</div>
+							</div> */}
 
 							{/* Блок коэффициентов объекта */}
-							<div className='lg:col-span-4 p-4 bg-gray-50 rounded-lg border border-gray-200'>
+							{/* <div className='lg:col-span-4 p-4 bg-gray-50 rounded-lg border border-gray-200'>
 								<h3 className='text-lg font-semibold mb-2 text-(--accent-color1)'>
 									Коэффициенты объекта
 								</h3>
@@ -1049,10 +1049,10 @@ export const Calculator: React.FC<Props> = ({ className }) => {
 										</ul>
 									</div>
 								</div>
-							</div>
+							</div> */}
 
 							{/* Блок коэффициентов площади */}
-							<div className='lg:col-span-4 p-4 bg-gray-50 rounded-lg border border-gray-200'>
+							{/* <div className='lg:col-span-4 p-4 bg-gray-50 rounded-lg border border-gray-200'>
 								<h3 className='text-lg font-semibold mb-2 text-(--accent-color1)'>
 									Коэффициенты площади
 								</h3>
@@ -1081,7 +1081,7 @@ export const Calculator: React.FC<Props> = ({ className }) => {
 										</ul>
 									</div>
 								</div>
-							</div>
+							</div>*/}
 						</div>
 
 						{/* Результаты расчета */}

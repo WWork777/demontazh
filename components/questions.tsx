@@ -2,7 +2,7 @@
 import { cn } from '@/lib/utils'
 import React, { useState } from 'react'
 import { IoChevronForwardSharp } from 'react-icons/io5'
-import ConectionModal from './modals/connectionModal'
+import ConnectionModal from './modals/connectionModal'
 import { Accordion } from './ui/accordion/accordion'
 import { Button } from './ui/button'
 import { Title } from './ui/title'
@@ -77,7 +77,7 @@ export const Questions: React.FC<Props> = ({ className }) => {
 					</div>
 				</div>
 			</section>
-			<ConectionModal isOpen={isModalOpen} onClose={handleCloseModal} />
+			<ConnectionModal isOpen={isModalOpen} onClose={handleCloseModal} />
 		</>
 	)
 }

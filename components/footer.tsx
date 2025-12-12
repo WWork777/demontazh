@@ -1,4 +1,10 @@
 'use client'
+import {
+	PHONE_NUMBER,
+	PHONE_NUMBER_SRC,
+	TELEGRAM_USER,
+	WHATSAPP_NUMBER,
+} from '@/constants'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import React, { useState } from 'react'
@@ -91,18 +97,16 @@ export const Footer: React.FC<Props> = ({ className }) => {
 					<div className='col-start-1 md:col-start-10 col-end-13 flex flex-col justify-end pt-1 md:pt-0'>
 						<div className='pb-3'>
 							<a
-								href='tel:+79999999999'
+								href={PHONE_NUMBER_SRC}
 								className='flex items-center md:justify-end gap-2 hover:text-(--accent-color1) transition-colors duration-300'
 								aria-label='Позвонить по телефону'
 							>
-								<span className='md:text-xl font-medium'>
-									+7 (999) 999 99 99
-								</span>
+								<span className='md:text-xl font-medium'>{PHONE_NUMBER}</span>
 							</a>
 						</div>
 						<div className='flex gap-3 md:justify-end'>
 							<a
-								href='https://t.me/your_username'
+								href={`https://t.me/${TELEGRAM_USER}`}
 								target='_blank'
 								rel='noopener noreferrer'
 								className='bg-(--accent-color2) text-white p-2 rounded-full hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center w-10 md:w-[45px] h-10 md:h-[45px]'
@@ -111,7 +115,7 @@ export const Footer: React.FC<Props> = ({ className }) => {
 								<FaTelegramPlane className='text-3xl mr-1' />
 							</a>
 							<a
-								href='https://wa.me/79999999999'
+								href={`https://wa.me/${WHATSAPP_NUMBER} }`}
 								target='_blank'
 								rel='noopener noreferrer'
 								className='bg-(--accent-color1) text-white p-2 rounded-full hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center w-10 md:w-[45px] h-10 md:h-[45px]'

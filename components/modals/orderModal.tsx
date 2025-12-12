@@ -1,3 +1,8 @@
+import {
+	TELEGRAM_BOT_TOKEN,
+	TELEGRAM_CHAT_ID,
+	WHATSAPP_NUMBER,
+} from '@/constants'
 import { cn } from '@/lib/utils'
 import React, { useEffect, useState } from 'react'
 import { Button } from '../ui/button'
@@ -38,8 +43,8 @@ export const OrderModal: React.FC<OrderModalProps> = ({
 	// Отправка в Telegram
 	const sendToTelegram = () => {
 		const message = createMessage()
-		const botToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN
-		const chatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID
+		const botToken = { TELEGRAM_BOT_TOKEN }
+		const chatId = { TELEGRAM_CHAT_ID }
 
 		if (botToken && chatId) {
 			fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
@@ -62,7 +67,7 @@ export const OrderModal: React.FC<OrderModalProps> = ({
 	// Отправка в WhatsApp
 	const sendToWhatsApp = () => {
 		const message = createMessage()
-		const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ''
+		const phoneNumber = WHATSAPP_NUMBER
 		const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
 			message
 		)}`

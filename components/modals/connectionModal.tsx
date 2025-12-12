@@ -1,15 +1,13 @@
 'use client'
-import { cn } from '@/lib/utils'
-import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
 import {
-	FaClock,
-	FaEnvelope,
-	FaMapMarkerAlt,
-	FaPhoneAlt,
-	FaTelegramPlane,
-	FaWhatsapp,
-} from 'react-icons/fa'
+	PHONE_NUMBER,
+	PHONE_NUMBER_SRC,
+	TELEGRAM_USER,
+	WHATSAPP_NUMBER,
+} from '@/constants'
+import Link from 'next/link'
+import { useEffect, useRef } from 'react'
+import { FaClock, FaEnvelope, FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa'
 import { RxCross1 } from 'react-icons/rx'
 
 interface ConnectionModalProps {
@@ -19,62 +17,60 @@ interface ConnectionModalProps {
 
 const ConnectionModal = ({ isOpen, onClose }: ConnectionModalProps) => {
 	const modalRef = useRef<HTMLDivElement>(null)
-	const [selectedMessenger, setSelectedMessenger] = useState<
-		'telegram' | 'whatsapp'
-	>('telegram')
+	// const [selectedMessenger, setSelectedMessenger] = useState<
+	// 	'telegram' | 'whatsapp'
+	// >('telegram')
 
 	// Телефон и контакты
-	const phoneNumber = '79991234567'
-	const formattedPhone = phoneNumber.replace(
-		/(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})/,
-		'+$1 ($2) $3-$4-$5'
-	)
-	const telegramLink = `https://t.me/${phoneNumber.replace('+', '')}`
-	const whatsappLink = `https://wa.me/${phoneNumber.replace('+', '')}`
-	const email = 'info@example.com'
-	const address = 'г. Уран-Батор, пл. Бабаясина д. 123'
-	const workHours = 'Пн-Пт: 9:00-18:00'
+	const phoneNumber = PHONE_NUMBER
+	const formattedPhone = PHONE_NUMBER_SRC
+
+	const telegramLink = `https://t.me/${TELEGRAM_USER}`
+	const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}`
+	const email = 'info@demontazh.ru'
+	const address = 'г. Кемерово'
+	const workHours = 'Пн-Пт: 9:00-20:00'
 
 	// Формирование сообщения
 	const createMessage = () => {
-		return `📱 Запрос на связь\n\n👤 Клиент заинтересован в наших услугах\n📞 Телефон: ${formattedPhone}\n📅 Дата обращения: ${new Date().toLocaleString(
+		return `📱 Запрос на связь\n\n👤 Клиент заинтересован в наших услугах\n📅 Дата обращения: ${new Date().toLocaleString(
 			'ru-RU'
 		)}`
 	}
 
 	// Отправка в Telegram
-	const sendToTelegram = () => {
-		const message = createMessage()
-		const botToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN
-		const chatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID
+	// const sendToTelegram = () => {
+	// 	const message = createMessage()
+	// 	const botToken = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN
+	// 	const chatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID
 
-		if (botToken && chatId) {
-			fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					chat_id: chatId,
-					text: message,
-					parse_mode: 'HTML',
-				}),
-			})
-		} else {
-			const url = `https://t.me/share/url?url=&text=${encodeURIComponent(
-				message
-			)}`
-			window.open(url, '_blank')
-		}
-	}
+	// 	if (botToken && chatId) {
+	// 		fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+	// 			method: 'POST',
+	// 			headers: { 'Content-Type': 'application/json' },
+	// 			body: JSON.stringify({
+	// 				chat_id: chatId,
+	// 				text: message,
+	// 				parse_mode: 'HTML',
+	// 			}),
+	// 		})
+	// 	} else {
+	// 		const url = `https://t.me/share/url?url=&text=${encodeURIComponent(
+	// 			message
+	// 		)}`
+	// 		window.open(url, '_blank')
+	// 	}
+	// }
 
 	// Отправка в WhatsApp
-	const sendToWhatsApp = () => {
-		const message = createMessage()
-		const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ''
-		const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
-			message
-		)}`
-		window.open(url, '_blank')
-	}
+	// const sendToWhatsApp = () => {
+	// 	const message = createMessage()
+	// 	const phoneNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || ''
+	// 	const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+	// 		message
+	// 	)}`
+	// 	window.open(url, '_blank')
+	// }
 
 	// Закрытие модального окна по клику вне его области и клавише Escape
 	useEffect(() => {
@@ -144,10 +140,10 @@ const ConnectionModal = ({ isOpen, onClose }: ConnectionModalProps) => {
 									<div className='flex-1'>
 										<p className='text-xs text-gray-500'>Телефон</p>
 										<a
-											href={`tel:${phoneNumber}`}
+											href={`tel:${formattedPhone}`}
 											className='text-sm font-semibold text-gray-800 hover:text-(--accent-color1) transition-colors'
 										>
-											{formattedPhone}
+											{phoneNumber}
 										</a>
 									</div>
 								</div>
@@ -176,7 +172,7 @@ const ConnectionModal = ({ isOpen, onClose }: ConnectionModalProps) => {
 								</div>
 
 								<div className='flex items-center gap-3'>
-									<FaClock className='text-(--accent-color1) size-4 flex-shrink-0' />
+									<FaClock className='text-(--accent-color1) size-4 shrink-0' />
 									<div className='flex-1'>
 										<p className='text-xs text-gray-500'>Режим работы</p>
 										<p className='text-sm font-semibold text-gray-800'>
@@ -192,7 +188,7 @@ const ConnectionModal = ({ isOpen, onClose }: ConnectionModalProps) => {
 							<p className='text-sm font-medium text-gray-700 mb-2'>
 								Написать в мессенджер
 							</p>
-							<div className='grid grid-cols-2 gap-3'>
+							{/* <div className='grid grid-cols-2 gap-3'>
 								<button
 									type='button'
 									onClick={() => setSelectedMessenger('telegram')}
@@ -220,7 +216,7 @@ const ConnectionModal = ({ isOpen, onClose }: ConnectionModalProps) => {
 									<FaWhatsapp className='size-6 text-green-500' />
 									<span className='text-sm font-medium'>WhatsApp</span>
 								</button>
-							</div>
+							</div> */}
 						</div>
 
 						{/* Прямые ссылки на мессенджеры */}

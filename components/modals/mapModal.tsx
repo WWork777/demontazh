@@ -1,5 +1,7 @@
 'use client'
+import { PHONE_NUMBER, PHONE_NUMBER_SRC } from '@/constants'
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 import {
 	FaBus,
@@ -83,10 +85,15 @@ const MapModal = ({ isOpen, onClose }: MapModalProps) => {
 					<div className='flex items-center justify-between'>
 						<div>
 							<h2 className='text-lg sm:text-xl font-bold text-gray-900'>
-								Наш офис
+								<Link
+									href={'/'}
+									className='logo text-(--accent-color2) text-[30px]  font-bebas'
+								>
+									ДЕМОНТАЖ<span className='text-(--accent-color1)'>42</span>
+								</Link>
 							</h2>
 							<p className='text-xs sm:text-sm text-gray-600 mt-0.5'>
-								г. Кемерово, ул. Садовая, 123
+								г. Кемерово
 							</p>
 						</div>
 						<button
@@ -133,7 +140,7 @@ const MapModal = ({ isOpen, onClose }: MapModalProps) => {
 									<div className='flex-1 min-w-0'>
 										<p className='text-xs text-gray-500'>Адрес</p>
 										<p className='text-sm font-semibold text-gray-800 truncate'>
-											г. Кемерово, ул. Садовая, 123
+											г. Кемерово
 										</p>
 									</div>
 								</div>
@@ -143,10 +150,10 @@ const MapModal = ({ isOpen, onClose }: MapModalProps) => {
 									<div className='flex-1 min-w-0'>
 										<p className='text-xs text-gray-500'>Телефон</p>
 										<a
-											href='tel:+79999999999'
+											href={PHONE_NUMBER_SRC}
 											className='text-sm font-semibold text-gray-800 hover:text-(--accent-color1) transition-colors truncate block'
 										>
-											+7 (999) 999-99-99
+											{PHONE_NUMBER}
 										</a>
 									</div>
 								</div>
@@ -218,8 +225,8 @@ const MapModal = ({ isOpen, onClose }: MapModalProps) => {
 							</a>
 						</div>
 						<a
-							href='tel:+79999999999'
-							className='block text-center py-2.5 px-4 rounded-[10px] bg-(--accent-color1) text-white font-medium hover:bg-(--accent-color1-dark) transition-colors text-sm sm:text-base'
+							href={PHONE_NUMBER_SRC}
+							className='block text-center py-2.5 px-4 rounded-[10px] bg-(--accent-color1) text-white font-medium hover:bg-(--accent-color2) transition-colors text-sm sm:text-base'
 						>
 							{isMobile ? 'Позвонить' : 'Позвонить нам'}
 						</a>

@@ -2,7 +2,6 @@ import ScrollToTopButton from '@/components/ui/scrollToTop'
 import type { Metadata } from 'next'
 import { Montserrat, Wix_Madefor_Display } from 'next/font/google'
 import localFont from 'next/font/local'
-import Head from 'next/head'
 import './globals.css'
 
 const wix = Wix_Madefor_Display({
@@ -58,9 +57,6 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='ru'>
-			<Head>
-				<link rel='preload' href='/img/hero_bg.png' as='image' />
-			</Head>
 			<body
 				className={`${bebas.variable} ${wix.variable} ${montserrat.variable} antialiased`}
 			>

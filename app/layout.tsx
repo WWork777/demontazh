@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Montserrat, Wix_Madefor_Display } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
+import YandexMetrika from "@/components/YandexMetrika/YandexMetrika";
 
 const wix = Wix_Madefor_Display({
   variable: "--font-wix",
@@ -65,6 +66,7 @@ export default function RootLayout({
       >
         {children}
         <ScrollToTopButton />
+        <YandexMetrika />
       </body>
     </html>
   );

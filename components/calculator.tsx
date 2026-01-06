@@ -284,52 +284,56 @@ export const Calculator: React.FC<Props> = ({ className }) => {
           </div>
 
           {/* Площадь — всегда внизу */}
-          <div className="mb-8">
-            <p className="text-2xl font-bold mb-4">Площадь</p>
-            <div className="space-y-4">
-              <input
-                type="range"
-                min={5}
-                max={500}
-                step={5}
-                value={area}
-                onChange={(e) => setArea(Number(e.target.value))}
-                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-(--accent-color1)"
-              />
-              <div className="rounded-[13px] bg-(--layer-color) p-6 text-center">
-                <span className="text-2xl font-bold">
-                  {area} <small>м²</small>
-                </span>
+          <div className="mb-8 flex flex-col lg:flex-row gap-6">
+            {/* Площадь */}
+            <div className="flex-1">
+              <p className="text-2xl font-bold mb-4">Вывоз мусора</p>
+              <div className="flex gap-4">
+                {[false, true].map((v) => (
+                  <label
+                    key={String(v)}
+                    className="flex items-center gap-3 cursor-pointer group"
+                  >
+                    <input
+                      type="radio"
+                      className="sr-only peer"
+                      checked={needGarbage === v}
+                      onChange={() => setNeedGarbage(v)}
+                    />
+                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)">
+                      {needGarbage === v && (
+                        <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                      )}
+                    </div>
+                    <span className="group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)">
+                      {v ? "Да" : "Нет"}
+                    </span>
+                  </label>
+                ))}
               </div>
             </div>
-          </div>
 
-          {/* Вывоз мусора */}
-          <div className="mb-8">
-            <p className="text-2xl font-bold mb-4">Вывоз мусора</p>
-            <div className="flex gap-4">
-              {[false, true].map((v) => (
-                <label
-                  key={String(v)}
-                  className="flex items-center gap-3 cursor-pointer group"
-                >
-                  <input
-                    type="radio"
-                    className="sr-only peer"
-                    checked={needGarbage === v}
-                    onChange={() => setNeedGarbage(v)}
-                  />
-                  <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)">
-                    {needGarbage === v && (
-                      <div className="w-2.5 h-2.5 rounded-full bg-white" />
-                    )}
-                  </div>
-                  <span className="group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)">
-                    {v ? "Да" : "Нет"}
+            <div className="flex-1">
+              <p className="text-2xl font-bold mb-4">Площадь</p>
+              <div className="space-y-4">
+                <input
+                  type="range"
+                  min={5}
+                  max={500}
+                  step={5}
+                  value={area}
+                  onChange={(e) => setArea(Number(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-(--accent-color1)"
+                />
+                <div className="rounded-[13px] bg-(--layer-color) p-6 text-center">
+                  <span className="text-2xl font-bold">
+                    {area} <small>м²</small>
                   </span>
-                </label>
-              ))}
+                </div>
+              </div>
             </div>
+
+            {/* Вывоз мусора */}
           </div>
 
           {/* Результаты */}

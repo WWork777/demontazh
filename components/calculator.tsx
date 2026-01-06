@@ -1,1158 +1,381 @@
-// import { cn } from '@/lib/utils'
-// import React from 'react'
-// import { Button } from './ui/button'
-// import { Title } from './ui/title'
+"use client";
 
-// interface Props {
-// 	className?: string
-// }
-
-// export const Calculator: React.FC<Props> = ({ className }) => {
-// 	return (
-// 		<section className={cn(className)}>
-// 			<div className='sm:container mx-auto py-5 px-3'>
-// 				<Title
-// 					className='text-[36px] sm:text-[50px] md:text-[56px] font-semibold'
-// 					title='Рассчитайте стоимость работ!'
-// 				/>
-// 				<div className='border border-black rounded-[20px] p-[30px]'>
-// 					<div className='grid grid-cols-12 mb-5'>
-// 						<div className='col-start-1 col-end-5'>
-// 							<p className='text-2xl font-bold'>
-// 								Какой тип работ вас интересует?
-// 							</p>
-// 							<div>
-// 								{' '}
-// 								Впиши сюда селект-групп с полями Демонтаж перегородок Демонтаж
-// 								полов / стяжки Демонтаж потолков Полный демонтаж под «бетон»
-// 								Вывоз мусора Другое{' '}
-// 							</div>
-// 						</div>
-// 						<div className='col-start-5 col-end-9'>
-// 							<p className='text-2xl font-bold'>Объект работ</p>
-// 							<div>
-// 								Впиши сюда селект-групп с полями Квартира Коммерческое помещение
-// 								Дом Производственное помещение Другое{' '}
-// 							</div>
-// 						</div>
-// 						<div className='col-start-9 col-end-13'>
-// 							<p className='text-2xl font-bold'>Площадь помещения </p>
-// 							<div>Впиши сюда range</div>
-// 							<div className='rounded-[13px] bg-(--layer-color) p-8'>
-// 								<span className='text-2xl font-bold'>
-// 									80 <small>M</small>2
-// 								</span>
-// 							</div>
-// 						</div>
-// 					</div>
-// 					<div className='grid grid-cols-14 gap-5'>
-// 						<div className='col-start-1 col-end-6 bg-(--layer-color) rounded-[20px] px-5 py-8 flex'>
-// 							<div className='mt-4'>
-// 								<span className='text-2xl text-(--accent-color1) font-semibold block'>
-// 									80 м2
-// 								</span>
-// 								<span className='text-2xl text-(--accent-color1) font-semibold block'>
-// 									Квартира
-// 								</span>
-// 								<span className='text-2xl text-(--accent-color1) font-semibold block'>
-// 									Демонтаж перегородок
-// 								</span>
-// 							</div>
-// 						</div>
-// 						<div className='col-start-6 col-end-15 bg-(--layer-color) rounded-[20px] grid grid-cols-2 px-5 py-8'>
-// 							<div className='col-start-1 col-end-2 flex items-center gap-2'>
-// 								<span className='text-9xl font-bebas font-medium text-(--accent-color1) '>
-// 									10.000
-// 								</span>
-// 								<img className='w-[67px]' src='/svg/rub.svg' alt='rub' />
-// 							</div>
-// 							<div className='col-start-2 col-end-3 flex items-center justify-end'>
-// 								<Button
-// 									className='rounded-[15px] py-6 px-11 bg-(--accent-color1) text-white text-2xl font-semibold'
-// 									text='Отправить заявку'
-// 								/>
-// 							</div>
-// 						</div>
-// 					</div>
-// 				</div>
-// 			</div>
-// 		</section>
-// 	)
-// }
-
-// 'use client'
-// import { cn } from '@/lib/utils'
-// import React, { useState } from 'react'
-// import { Button } from './ui/button'
-// import { Title } from './ui/title'
-
-// interface Props {
-// 	className?: string
-// }
-
-// const workTypes = [
-// 	{ id: 'demolition_partitions', label: 'Демонтаж перегородок' },
-// 	{ id: 'demolition_floors', label: 'Демонтаж полов / стяжки' },
-// 	{ id: 'demolition_ceilings', label: 'Демонтаж потолков' },
-// 	{ id: 'full_demolition', label: 'Полный демонтаж под «бетон»' },
-// 	{ id: 'garbage_removal', label: 'Вывоз мусора' },
-// 	{ id: 'other', label: 'Другое' },
-// ]
-
-// const objectTypes = [
-// 	{ id: 'apartment', label: 'Квартира' },
-// 	{ id: 'commercial', label: 'Коммерческое помещение' },
-// 	{ id: 'house', label: 'Дом' },
-// 	{ id: 'industrial', label: 'Производственное помещение' },
-// 	{ id: 'other_object', label: 'Другое' },
-// ]
-
-// export const Calculator: React.FC<Props> = ({ className }) => {
-// 	const [workType, setWorkType] = useState(workTypes[0].id)
-// 	const [objectType, setObjectType] = useState(objectTypes[0].id)
-// 	const [area, setArea] = useState(80)
-// 	const [price] = useState(10000)
-
-// 	const getWorkTypeLabel = () => {
-// 		return workTypes.find(w => w.id === workType)?.label || workTypes[0].label
-// 	}
-
-// 	const getObjectTypeLabel = () => {
-// 		return (
-// 			objectTypes.find(o => o.id === objectType)?.label || objectTypes[0].label
-// 		)
-// 	}
-
-// 	return (
-// 		<section className={cn(className)}>
-// 			<div className='sm:container mx-auto py-5 px-3'>
-// 				<Title
-// 					className='text-[36px] sm:text-[50px] md:text-[56px] font-semibold'
-// 					title='Рассчитайте стоимость работ!'
-// 				/>
-// 				<div className='border border-black rounded-[20px] p-[30px]'>
-// 					<div className='grid grid-cols-1 lg:grid-cols-12 mb-5 gap-6'>
-// 						{/* Тип работ - Radio Group */}
-// 						<div className='lg:col-span-4'>
-// 							<p className='text-2xl font-bold mb-4'>
-// 								Какой тип работ вас интересует?
-// 							</p>
-// 							<div className='space-y-3'>
-// 								{workTypes.map(type => (
-// 									<label
-// 										key={type.id}
-// 										className='flex items-center space-x-3 cursor-pointer group'
-// 									>
-// 										<div className='relative'>
-// 											<input
-// 												type='radio'
-// 												name='workType'
-// 												value={type.id}
-// 												checked={workType === type.id}
-// 												onChange={e => setWorkType(e.target.value)}
-// 												className='sr-only peer'
-// 											/>
-// 											<div className='w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center group-hover:border-(--accent-color1) transition-colors peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)'>
-// 												{workType === type.id && (
-// 													<div className='w-2.5 h-2.5 rounded-full bg-white'></div>
-// 												)}
-// 											</div>
-// 										</div>
-// 										<span className='text-lg group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)'>
-// 											{type.label}
-// 										</span>
-// 									</label>
-// 								))}
-// 							</div>
-// 						</div>
-
-// 						{/* Объект работ - Radio Group */}
-// 						<div className='lg:col-span-4'>
-// 							<p className='text-2xl font-bold mb-4'>Объект работ</p>
-// 							<div className='space-y-3'>
-// 								{objectTypes.map(type => (
-// 									<label
-// 										key={type.id}
-// 										className='flex items-center space-x-3 cursor-pointer group'
-// 									>
-// 										<div className='relative'>
-// 											<input
-// 												type='radio'
-// 												name='objectType'
-// 												value={type.id}
-// 												checked={objectType === type.id}
-// 												onChange={e => setObjectType(e.target.value)}
-// 												className='sr-only peer'
-// 											/>
-// 											<div className='w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center group-hover:border-(--accent-color1) transition-colors peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)'>
-// 												{objectType === type.id && (
-// 													<div className='w-2.5 h-2.5 rounded-full bg-white'></div>
-// 												)}
-// 											</div>
-// 										</div>
-// 										<span className='text-lg group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)'>
-// 											{type.label}
-// 										</span>
-// 									</label>
-// 								))}
-// 							</div>
-// 						</div>
-
-// 						{/* Площадь помещения - Range Slider */}
-// 						<div className='lg:col-span-4'>
-// 							<p className='text-2xl font-bold mb-4'>Площадь помещения</p>
-// 							<div className='space-y-4'>
-// 								<div className='relative'>
-// 									<input
-// 										type='range'
-// 										min='10'
-// 										max='500'
-// 										step='5'
-// 										value={area}
-// 										onChange={e => setArea(Number(e.target.value))}
-// 										className='w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-(--accent-color1)'
-// 									/>
-// 									<div className='flex justify-between text-sm text-gray-500 mt-2'>
-// 										<span>10 м²</span>
-// 										<span>250 м²</span>
-// 										<span>500 м²</span>
-// 									</div>
-// 								</div>
-// 								<div className='rounded-[13px] bg-(--layer-color) p-6 text-center'>
-// 									<span className='text-2xl font-bold'>
-// 										{area} <small>м²</small>
-// 									</span>
-// 								</div>
-// 							</div>
-// 						</div>
-// 					</div>
-
-// 					{/* Результаты расчета */}
-// 					<div className='grid grid-cols-1 lg:grid-cols-14 gap-6'>
-// 						<div className='lg:col-span-5 bg-(--layer-color) rounded-[20px] px-5 py-8 flex items-center'>
-// 							<div className='mt-4'>
-// 								<span className='text-2xl text-(--accent-color1) font-semibold block'>
-// 									{area} м²
-// 								</span>
-// 								<span className='text-2xl text-(--accent-color1) font-semibold block'>
-// 									{getObjectTypeLabel()}
-// 								</span>
-// 								<span className='text-2xl text-(--accent-color1) font-semibold block'>
-// 									{getWorkTypeLabel()}
-// 								</span>
-// 							</div>
-// 						</div>
-// 						<div className='lg:col-span-9 bg-(--layer-color) rounded-[20px] grid grid-cols-1 md:grid-cols-2 px-5 py-8 gap-6 md:gap-0'>
-// 							<div className='flex items-center gap-2 justify-center md:justify-start'>
-// 								<span className='text-7xl lg:text-9xl font-bebas font-medium text-(--accent-color1)'>
-// 									{price.toLocaleString('ru-RU')}
-// 								</span>
-// 								<img
-// 									className='w-12 lg:w-[67px]'
-// 									src='/svg/rub.svg'
-// 									alt='rub'
-// 								/>
-// 							</div>
-// 							<div className='flex items-center justify-center md:justify-end'>
-// 								<Button
-// 									className='rounded-[15px] py-6 px-8 lg:px-11 bg-(--accent-color1) text-white text-xl lg:text-2xl font-semibold'
-// 									text='Отправить заявку'
-// 								/>
-// 							</div>
-// 						</div>
-// 					</div>
-// 				</div>
-// 			</div>
-// 		</section>
-// 	)
-// }
-
-// 'use client'
-// import { cn } from '@/lib/utils'
-// import React, { useEffect, useMemo, useState } from 'react'
-// import { Button } from './ui/button'
-// import { Title } from './ui/title'
-
-// interface Props {
-// 	className?: string
-// }
-
-// const workTypes = [
-// 	{ id: 'demolition_partitions', label: 'Демонтаж перегородок' },
-// 	{ id: 'demolition_floors', label: 'Демонтаж полов / стяжки' },
-// 	{ id: 'demolition_ceilings', label: 'Демонтаж потолков' },
-// 	{ id: 'full_demolition', label: 'Полный демонтаж под «бетон»' },
-// 	{ id: 'garbage_removal', label: 'Вывоз мусора' },
-// 	{ id: 'other', label: 'Другое' },
-// ]
-
-// const objectTypes = [
-// 	{ id: 'apartment', label: 'Квартира' },
-// 	{ id: 'commercial', label: 'Коммерческое помещение' },
-// 	{ id: 'house', label: 'Дом' },
-// 	{ id: 'industrial', label: 'Производственное помещение' },
-// 	{ id: 'other_object', label: 'Другое' },
-// ]
-
-// // Базовая стоимость работ за м² в Кемерово (руб.)
-// // Основано на реальных прайс-листах компаний Кемерово[citation:1][citation:2][citation:4]
-// const priceRates = {
-// 	// Демонтаж перегородок: ГКЛ, кирпич, бетон[citation:2][citation:4]
-// 	demolition_partitions: {
-// 		baseRate: 300, // Средняя цена за м²
-// 		minArea: 10,
-// 		maxArea: 500,
-// 		description: 'Демонтаж перегородок (ГКЛ, кирпич)',
-// 	},
-// 	// Демонтаж полов и стяжки[citation:1][citation:3][citation:7]
-// 	demolition_floors: {
-// 		baseRate: 250,
-// 		minArea: 10,
-// 		maxArea: 500,
-// 		description: 'Демонтаж полов, стяжки, покрытий',
-// 	},
-// 	// Демонтаж потолков[citation:2][citation:8]
-// 	demolition_ceilings: {
-// 		baseRate: 150,
-// 		minArea: 10,
-// 		maxArea: 500,
-// 		description: 'Демонтаж подвесных, натяжных потолков',
-// 	},
-// 	// Полный демонтаж (комплексная работа дороже)[citation:9]
-// 	full_demolition: {
-// 		baseRate: 600,
-// 		minArea: 10,
-// 		maxArea: 500,
-// 		description: 'Полный демонтаж помещения',
-// 	},
-// 	// Вывоз мусора (фиксированная ставка + за площадь)[citation:4][citation:6]
-// 	garbage_removal: {
-// 		baseRate: 100,
-// 		minArea: 10,
-// 		maxArea: 500,
-// 		fixedCost: 2000, // Фиксированная стоимость за вызов
-// 		description: 'Вывоз строительного мусора',
-// 	},
-// 	// Другое (базовая ставка)
-// 	other: {
-// 		baseRate: 200,
-// 		minArea: 10,
-// 		maxArea: 500,
-// 		description: 'Индивидуальный расчёт',
-// 	},
-// }
-
-// // Коэффициенты для типа объекта[citation:2]
-// const objectCoefficients = {
-// 	apartment: 1.0, // Квартира - базовая ставка
-// 	commercial: 1.3, // Коммерческое помещение +30%
-// 	house: 1.1, // Дом +10%
-// 	industrial: 1.5, // Производственное помещение +50%
-// 	other_object: 1.2, // Другое +20%
-// }
-
-// // Скидки/надбавки за площадь[citation:3]
-// const areaCoefficients = {
-// 	small: { min: 10, max: 50, coefficient: 1.3 }, // До 50 м² +30%
-// 	medium: { min: 51, max: 100, coefficient: 1.0 }, // 51-100 м² базовая
-// 	large: { min: 101, max: 200, coefficient: 0.9 }, // 101-200 м² -10%
-// 	xlarge: { min: 201, max: 500, coefficient: 0.8 }, // 201-500 м² -20%
-// }
-
-// export const Calculator: React.FC<Props> = ({ className }) => {
-// 	const [workType, setWorkType] = useState(workTypes[0].id)
-// 	const [objectType, setObjectType] = useState(objectTypes[0].id)
-// 	const [area, setArea] = useState(80)
-// 	const [price, setPrice] = useState(0)
-// 	const [breakdown, setBreakdown] = useState<string[]>([])
-
-// 	// Функция расчета стоимости
-// 	const calculatePrice = useMemo(() => {
-// 		return (workId: string, objectId: string, areaValue: number) => {
-// 			const rate = priceRates[workId as keyof typeof priceRates]
-// 			const objectCoeff =
-// 				objectCoefficients[objectId as keyof typeof objectCoefficients]
-
-// 			// Определяем коэффициент площади
-// 			let areaCoeff = 1.0
-// 			for (const key in areaCoefficients) {
-// 				const range = areaCoefficients[key as keyof typeof areaCoefficients]
-// 				if (areaValue >= range.min && areaValue <= range.max) {
-// 					areaCoeff = range.coefficient
-// 					break
-// 				}
-// 			}
-
-// 			// Расчет стоимости
-// 			let calculatedPrice = 0
-// 			const breakdownSteps: string[] = []
-
-// 			// Базовая стоимость
-// 			const baseCost = rate.baseRate * areaValue
-// 			calculatedPrice = baseCost
-// 			breakdownSteps.push(
-// 				`${rate.baseRate} ₽/м² × ${areaValue} м² = ${baseCost.toLocaleString(
-// 					'ru-RU'
-// 				)} ₽`
-// 			)
-
-// 			// Применяем коэффициент объекта
-// 			if (objectCoeff !== 1.0) {
-// 				const objectAdjustment = calculatedPrice * (objectCoeff - 1)
-// 				calculatedPrice *= objectCoeff
-// 				breakdownSteps.push(
-// 					`Коэф. объекта (${objectCoeff.toFixed(
-// 						1
-// 					)}): ${objectAdjustment.toLocaleString('ru-RU')} ₽`
-// 				)
-// 			}
-
-// 			// Применяем коэффициент площади
-// 			if (areaCoeff !== 1.0) {
-// 				const areaAdjustment = calculatedPrice * (areaCoeff - 1)
-// 				calculatedPrice *= areaCoeff
-// 				breakdownSteps.push(
-// 					`Коэф. площади (${areaCoeff.toFixed(
-// 						1
-// 					)}): ${areaAdjustment.toLocaleString('ru-RU')} ₽`
-// 				)
-// 			}
-
-// 			// Добавляем фиксированную стоимость для вывоза мусора
-// 			if (workId === 'garbage_removal' && 'fixedCost' in rate) {
-// 				calculatedPrice += rate.fixedCost
-// 				breakdownSteps.push(
-// 					`Фиксированная стоимость вывоза: ${rate.fixedCost.toLocaleString(
-// 						'ru-RU'
-// 					)} ₽`
-// 				)
-// 			}
-
-// 			// Минимальная стоимость работы
-// 			const minPrice = 5000
-// 			if (calculatedPrice < minPrice) {
-// 				calculatedPrice = minPrice
-// 				breakdownSteps.push(
-// 					`Минимальная стоимость работ: ${minPrice.toLocaleString('ru-RU')} ₽`
-// 				)
-// 			}
-
-// 			// Округляем до сотен
-// 			calculatedPrice = Math.ceil(calculatedPrice / 100) * 100
-
-// 			return { price: calculatedPrice, breakdown: breakdownSteps }
-// 		}
-// 	}, [])
-
-// 	// Пересчет при изменении параметров
-// 	useEffect(() => {
-// 		const { price: newPrice, breakdown: newBreakdown } = calculatePrice(
-// 			workType,
-// 			objectType,
-// 			area
-// 		)
-// 		setPrice(newPrice)
-// 		setBreakdown(newBreakdown)
-// 	}, [workType, objectType, area, calculatePrice])
-
-// 	const getWorkTypeLabel = () => {
-// 		return workTypes.find(w => w.id === workType)?.label || workTypes[0].label
-// 	}
-
-// 	const getObjectTypeLabel = () => {
-// 		return (
-// 			objectTypes.find(o => o.id === objectType)?.label || objectTypes[0].label
-// 		)
-// 	}
-
-// 	const getRateDescription = () => {
-// 		return priceRates[workType as keyof typeof priceRates]?.description || ''
-// 	}
-
-// 	return (
-// 		<section className={cn(className)}>
-// 			<div className='sm:container mx-auto py-5 px-3'>
-// 				<Title
-// 					className='text-[36px] sm:text-[50px] md:text-[56px] font-semibold'
-// 					title='Рассчитайте стоимость работ!'
-// 				/>
-// 				<div className='border border-black rounded-[20px] p-[30px]'>
-// 					<div className='grid grid-cols-1 lg:grid-cols-12 mb-5 gap-6'>
-// 						{/* Тип работ - Radio Group */}
-// 						<div className='lg:col-span-4'>
-// 							<p className='text-2xl font-bold mb-4'>
-// 								Какой тип работ вас интересует?
-// 							</p>
-// 							<div className='space-y-3'>
-// 								{workTypes.map(type => (
-// 									<label
-// 										key={type.id}
-// 										className='flex items-center space-x-3 cursor-pointer group'
-// 									>
-// 										<div className='relative'>
-// 											<input
-// 												type='radio'
-// 												name='workType'
-// 												value={type.id}
-// 												checked={workType === type.id}
-// 												onChange={e => setWorkType(e.target.value)}
-// 												className='sr-only peer'
-// 											/>
-// 											<div className='w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center group-hover:border-(--accent-color1) transition-colors peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)'>
-// 												{workType === type.id && (
-// 													<div className='w-2.5 h-2.5 rounded-full bg-white'></div>
-// 												)}
-// 											</div>
-// 										</div>
-// 										<span className='text-lg group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)'>
-// 											{type.label}
-// 										</span>
-// 									</label>
-// 								))}
-// 							</div>
-// 							<div className='mt-4 p-3 bg-gray-50 rounded-lg'>
-// 								<p className='text-sm text-gray-600'>
-// 									<strong>Тариф:</strong> {getRateDescription()}
-// 								</p>
-// 								<p className='text-sm text-gray-600'>
-// 									<strong>Базовая ставка:</strong>{' '}
-// 									{priceRates[workType as keyof typeof priceRates]?.baseRate}{' '}
-// 									₽/м²
-// 								</p>
-// 							</div>
-// 						</div>
-
-// 						{/* Объект работ - Radio Group */}
-// 						<div className='lg:col-span-4'>
-// 							<p className='text-2xl font-bold mb-4'>Объект работ</p>
-// 							<div className='space-y-3'>
-// 								{objectTypes.map(type => (
-// 									<label
-// 										key={type.id}
-// 										className='flex items-center space-x-3 cursor-pointer group'
-// 									>
-// 										<div className='relative'>
-// 											<input
-// 												type='radio'
-// 												name='objectType'
-// 												value={type.id}
-// 												checked={objectType === type.id}
-// 												onChange={e => setObjectType(e.target.value)}
-// 												className='sr-only peer'
-// 											/>
-// 											<div className='w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center group-hover:border-(--accent-color1) transition-colors peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)'>
-// 												{objectType === type.id && (
-// 													<div className='w-2.5 h-2.5 rounded-full bg-white'></div>
-// 												)}
-// 											</div>
-// 										</div>
-// 										<span className='text-lg group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)'>
-// 											{type.label}
-// 										</span>
-// 									</label>
-// 								))}
-// 							</div>
-// 							<div className='mt-4 p-3 bg-gray-50 rounded-lg'>
-// 								<p className='text-sm text-gray-600'>
-// 									<strong>Коэффициент:</strong> ×
-// 									{objectCoefficients[
-// 										objectType as keyof typeof objectCoefficients
-// 									].toFixed(1)}
-// 								</p>
-// 								<p className='text-sm text-gray-600'>
-// 									{objectCoefficients[
-// 										objectType as keyof typeof objectCoefficients
-// 									] > 1
-// 										? '(повышающий, сложность работ)'
-// 										: '(базовая ставка)'}
-// 								</p>
-// 							</div>
-// 						</div>
-
-// 						{/* Площадь помещения - Range Slider */}
-// 						<div className='lg:col-span-4'>
-// 							<p className='text-2xl font-bold mb-4'>Площадь помещения</p>
-// 							<div className='space-y-4'>
-// 								<div className='relative'>
-// 									<input
-// 										type='range'
-// 										min='10'
-// 										max='500'
-// 										step='5'
-// 										value={area}
-// 										onChange={e => setArea(Number(e.target.value))}
-// 										className='w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-(--accent-color1)'
-// 									/>
-// 									<div className='flex justify-between text-sm text-gray-500 mt-2'>
-// 										<span>10 м²</span>
-// 										<span>250 м²</span>
-// 										<span>500 м²</span>
-// 									</div>
-// 								</div>
-// 								<div className='rounded-[13px] bg-(--layer-color) p-6 text-center'>
-// 									<span className='text-2xl font-bold'>
-// 										{area} <small>м²</small>
-// 									</span>
-// 								</div>
-// 								<div className='p-3 bg-gray-50 rounded-lg'>
-// 									<p className='text-sm text-gray-600'>
-// 										<strong>Коэффициент площади:</strong>{' '}
-// 										{(() => {
-// 											for (const key in areaCoefficients) {
-// 												const range =
-// 													areaCoefficients[key as keyof typeof areaCoefficients]
-// 												if (area >= range.min && area <= range.max) {
-// 													return `×${range.coefficient.toFixed(1)}`
-// 												}
-// 											}
-// 											return '×1.0'
-// 										})()}
-// 									</p>
-// 									<p className='text-sm text-gray-600'>
-// 										{area > 100
-// 											? '(скидка за большой объем)'
-// 											: area < 50
-// 											? '(надбавка за малый объем)'
-// 											: '(базовая ставка)'}
-// 									</p>
-// 								</div>
-// 							</div>
-// 						</div>
-// 					</div>
-
-// 					{/* Результаты расчета */}
-// 					<div className='grid grid-cols-1 lg:grid-cols-14 gap-6'>
-// 						<div className='lg:col-span-5 bg-(--layer-color) rounded-[20px] px-5 py-8'>
-// 							<div className='mt-4'>
-// 								<span className='text-2xl text-(--accent-color1) font-semibold block'>
-// 									{area} м²
-// 								</span>
-// 								<span className='text-2xl text-(--accent-color1) font-semibold block'>
-// 									{getObjectTypeLabel()}
-// 								</span>
-// 								<span className='text-2xl text-(--accent-color1) font-semibold block'>
-// 									{getWorkTypeLabel()}
-// 								</span>
-// 								<div className='mt-6 p-4 bg-white/50 rounded-lg'>
-// 									<p className='text-lg font-semibold mb-2'>Состав расчета:</p>
-// 									<ul className='text-sm space-y-1'>
-// 										{breakdown.map((step, index) => (
-// 											<li key={index} className='text-gray-700'>
-// 												{step}
-// 											</li>
-// 										))}
-// 									</ul>
-// 								</div>
-// 							</div>
-// 						</div>
-// 						<div className='lg:col-span-9 bg-(--layer-color) rounded-[20px] grid grid-cols-1 md:grid-cols-2 px-5 py-8 gap-6 md:gap-0'>
-// 							<div className='flex flex-col items-center md:items-start gap-2 justify-center md:justify-start'>
-// 								<div className='flex items-center gap-2'>
-// 									<span className='text-7xl lg:text-9xl font-bebas font-medium text-(--accent-color1)'>
-// 										{price.toLocaleString('ru-RU')}
-// 									</span>
-// 									<img
-// 										className='w-12 lg:w-[67px]'
-// 										src='/svg/rub.svg'
-// 										alt='rub'
-// 									/>
-// 								</div>
-// 								<p className='text-gray-600 text-lg mt-2'>
-// 									Итоговая стоимость работ
-// 								</p>
-// 								<p className='text-sm text-gray-500'>
-// 									*Расчет ориентировочный. Точную смету составит мастер после
-// 									осмотра
-// 								</p>
-// 							</div>
-// 							<div className='flex items-center justify-center md:justify-end'>
-// 								<Button
-// 									className='rounded-[15px] py-6 px-8 lg:px-11 bg-(--accent-color1) text-white text-xl lg:text-2xl font-semibold hover:bg-(--accent-color1-dark) transition-colors'
-// 									text='Отправить заявку'
-// 								/>
-// 							</div>
-// 						</div>
-// 					</div>
-// 				</div>
-// 			</div>
-// 		</section>
-// 	)
-// }
-
-'use client'
-
-import { cn } from '@/lib/utils'
-import React, { useEffect, useMemo, useState } from 'react'
-import { OrderModal } from './modals/orderModal'
-import { Button } from './ui/button'
-import { Title } from './ui/title'
+import React, { useMemo, useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
+import { Button } from "./ui/button";
+import { Title } from "./ui/title";
 
 interface Props {
-	className?: string
+  className?: string;
 }
 
-const workTypes = [
-	{ id: 'demolition_partitions', label: 'Демонтаж перегородок' },
-	{ id: 'demolition_floors', label: 'Демонтаж полов / стяжки' },
-	{ id: 'demolition_ceilings', label: 'Демонтаж потолков' },
-	{ id: 'full_demolition', label: 'Полный демонтаж под «бетон»' },
-	{ id: 'garbage_removal', label: 'Вывоз мусора' },
-	{ id: 'other', label: 'Другое' },
-]
+/* =======================
+   PRICE CONFIG
+======================= */
+const priceConfig = {
+  floors: {
+    label: "Демонтаж полов",
+    materials: {
+      concrete: { label: "Бетонная стяжка", rate: 1200 },
+      tile: { label: "Плитка / керамогранит", rate: 680 },
+      wood: { label: "Деревянный пол / лаги", rate: 800 },
+      laminate: { label: "Ламинат / паркет", rate: 400 },
+    },
+  },
+  walls: {
+    label: "Демонтаж стен и перегородок",
+    materials: {
+      gkl: { label: "ГКЛ / легкие перегородки", rate: 500 },
+      blocks: { label: "Газобетон / ПГП", rate: 700 },
+      brick_half: { label: "Кирпич 1/2", rate: 1800 },
+      brick_full: { label: "Кирпич 1", rate: 3000 },
+      concrete: { label: "Бетон / ЖБ", rate: 4000 },
+    },
+  },
+  ceilings: {
+    label: "Демонтаж потолков",
+    materials: {
+      gkl: { label: "ГКЛ", rate: 480 },
+      armstrong: { label: "Армстронг / рейка", rate: 220 },
+      plaster: { label: "Штукатурка / краска", rate: 500 },
+      stretch: { label: "Натяжной потолок", rate: 170 },
+    },
+  },
+  sanitary: { label: "Демонтаж сантехники", rate: 2200 },
+  electric: { label: "Демонтаж электрики", rate: 600 },
+  openings: { label: "Демонтаж окон, дверей, проемов", rate: 850 },
+  full: { label: "Комплексный демонтаж под бетон", rate: 1900 },
+} as const;
+
+type WorkType = keyof typeof priceConfig;
 
 const objectTypes = [
-	{ id: 'apartment', label: 'Квартира' },
-	{ id: 'commercial', label: 'Коммерческое помещение' },
-	{ id: 'house', label: 'Дом' },
-	{ id: 'industrial', label: 'Производственное помещение' },
-	{ id: 'other_object', label: 'Другое' },
-]
+  { id: "apartment", label: "Квартира" },
+  { id: "house", label: "Дом" },
+  { id: "commercial", label: "Коммерческое помещение" },
+  { id: "industrial", label: "Производственное помещение" },
+] as const;
 
-const priceRates = {
-	demolition_partitions: {
-		baseRate: 300,
-		minArea: 10,
-		maxArea: 500,
-		description: 'Демонтаж перегородок (ГКЛ, кирпич)',
-	},
-	demolition_floors: {
-		baseRate: 250,
-		minArea: 10,
-		maxArea: 500,
-		description: 'Демонтаж полов, стяжки, покрытий',
-	},
-	demolition_ceilings: {
-		baseRate: 150,
-		minArea: 10,
-		maxArea: 500,
-		description: 'Демонтаж подвесных, натяжных потолков',
-	},
-	full_demolition: {
-		baseRate: 600,
-		minArea: 10,
-		maxArea: 500,
-		description: 'Полный демонтаж помещения',
-	},
-	garbage_removal: {
-		baseRate: 100,
-		minArea: 10,
-		maxArea: 500,
-		fixedCost: 2000,
-		description: 'Вывоз строительного мусора',
-	},
-	other: {
-		baseRate: 200,
-		minArea: 10,
-		maxArea: 500,
-		description: 'Индивидуальный расчёт',
-	},
-}
+type ObjectType = (typeof objectTypes)[number]["id"];
 
-const objectCoefficients = {
-	apartment: 1.0,
-	commercial: 1.3,
-	house: 1.1,
-	industrial: 1.5,
-	other_object: 1.2,
-}
+const objectCoeff: Record<ObjectType, number> = {
+  apartment: 1,
+  house: 1.1,
+  commercial: 1.3,
+  industrial: 1.5,
+};
 
-const areaCoefficients = {
-	small: { min: 10, max: 50, coefficient: 1.3 },
-	medium: { min: 51, max: 100, coefficient: 1.0 },
-	large: { min: 101, max: 200, coefficient: 0.9 },
-	xlarge: { min: 201, max: 500, coefficient: 0.8 },
-}
+const areaCoeff = [
+  { min: 5, max: 50, k: 1.3 },
+  { min: 51, max: 100, k: 1 },
+  { min: 101, max: 200, k: 0.9 },
+  { min: 201, max: 500, k: 0.8 },
+];
 
+/* =======================
+   COMPONENT
+======================= */
 export const Calculator: React.FC<Props> = ({ className }) => {
-	const [workType, setWorkType] = useState(workTypes[0].id)
-	const [objectType, setObjectType] = useState(objectTypes[0].id)
-	const [area, setArea] = useState(80)
-	const [price, setPrice] = useState(0)
-	const [breakdown, setBreakdown] = useState<string[]>([])
-	const [isModalOpen, setIsModalOpen] = useState(false)
+  const [workType, setWorkType] = useState<WorkType>("floors");
+  const [objectType, setObjectType] = useState<ObjectType>("apartment");
+  const [area, setArea] = useState(80);
+  const [needGarbage, setNeedGarbage] = useState(false);
 
-	// Обновить обработчик кнопки:
-	const handleOrderClick = () => {
-		setIsModalOpen(true)
-	}
+  const currentConfig = priceConfig[workType];
 
-	const calculatePrice = useMemo(() => {
-		return (workId: string, objectId: string, areaValue: number) => {
-			const rate = priceRates[workId as keyof typeof priceRates]
-			const objectCoeff =
-				objectCoefficients[objectId as keyof typeof objectCoefficients]
+  // Состояние выбранного материала
+  const materialKeys =
+    "materials" in currentConfig
+      ? (Object.keys(currentConfig.materials) as Array<
+          keyof typeof currentConfig.materials
+        >)
+      : [];
 
-			let areaCoeff = 1.0
-			for (const key in areaCoefficients) {
-				const range = areaCoefficients[key as keyof typeof areaCoefficients]
-				if (areaValue >= range.min && areaValue <= range.max) {
-					areaCoeff = range.coefficient
-					break
-				}
-			}
+  const [material, setMaterial] = useState<
+    (typeof materialKeys)[number] | null
+  >(materialKeys[0] ?? null);
 
-			let calculatedPrice = 0
-			const breakdownSteps: string[] = []
+  // Обновляем материал при смене типа работы
+  useEffect(() => {
+    if (materialKeys.length > 0) {
+      setMaterial(materialKeys[0]);
+    } else {
+      setMaterial(null);
+    }
+  }, [workType]);
 
-			const baseCost = rate.baseRate * areaValue
-			calculatedPrice = baseCost
-			breakdownSteps.push(
-				`${rate.baseRate} ₽/м² × ${areaValue} м² = ${baseCost.toLocaleString(
-					'ru-RU'
-				)} ₽`
-			)
+  /* =======================
+     CALCULATION
+  ======================= */
+  const { total, steps } = useMemo(() => {
+    let baseRate = 0;
 
-			if (objectCoeff !== 1.0) {
-				const objectAdjustment = calculatedPrice * (objectCoeff - 1)
-				calculatedPrice *= objectCoeff
-				breakdownSteps.push(
-					`Коэф. объекта (${objectCoeff.toFixed(
-						1
-					)}): ${objectAdjustment.toLocaleString('ru-RU')} ₽`
-				)
-			}
+    // Безопасно берем rate
+    if (
+      "materials" in currentConfig &&
+      material &&
+      material in currentConfig.materials
+    ) {
+      baseRate = currentConfig.materials[material].rate;
+    } else if ("rate" in currentConfig) {
+      baseRate = currentConfig.rate;
+    }
 
-			if (areaCoeff !== 1.0) {
-				const areaAdjustment = calculatedPrice * (areaCoeff - 1)
-				calculatedPrice *= areaCoeff
-				breakdownSteps.push(
-					`Коэф. площади (${areaCoeff.toFixed(
-						1
-					)}): ${areaAdjustment.toLocaleString('ru-RU')} ₽`
-				)
-			}
+    let sum = baseRate * area;
+    const breakdown: string[] = [];
+    breakdown.push(`${baseRate} ₽/м² × ${area} м²`);
 
-			if (workId === 'garbage_removal' && 'fixedCost' in rate) {
-				calculatedPrice += rate.fixedCost
-				breakdownSteps.push(
-					`Фиксированная стоимость вывоза: ${rate.fixedCost.toLocaleString(
-						'ru-RU'
-					)} ₽`
-				)
-			}
+    // Коэффициент объекта
+    const objK = objectCoeff[objectType];
+    if (objK !== 1) {
+      const adjustment = sum * (objK - 1);
+      sum *= objK;
+      breakdown.push(
+        `Коэф. объекта (${objK.toFixed(1)}): ${adjustment.toLocaleString(
+          "ru-RU"
+        )} ₽`
+      );
+    }
 
-			const minPrice = 5000
-			if (calculatedPrice < minPrice) {
-				calculatedPrice = minPrice
-				breakdownSteps.push(
-					`Минимальная стоимость работ: ${minPrice.toLocaleString('ru-RU')} ₽`
-				)
-			}
+    // Коэффициент площади
+    const areaK = areaCoeff.find((r) => area >= r.min && area <= r.max)?.k ?? 1;
+    if (areaK !== 1) {
+      const adjustment = sum * (areaK - 1);
+      sum *= areaK;
+      breakdown.push(
+        `Коэф. площади (${areaK.toFixed(1)}): ${adjustment.toLocaleString(
+          "ru-RU"
+        )} ₽`
+      );
+    }
 
-			calculatedPrice = Math.ceil(calculatedPrice / 100) * 100
+    // Вывоз мусора
+    if (needGarbage) {
+      const adjustment = sum * 0.15;
+      sum *= 1.15;
+      breakdown.push(`Вывоз мусора: +${adjustment.toLocaleString("ru-RU")} ₽`);
+    }
 
-			return { price: calculatedPrice, breakdown: breakdownSteps }
-		}
-	}, [])
+    // Минимальная стоимость
+    if (sum < 5000) {
+      sum = 5000;
+      breakdown.push("Минимальная стоимость работ: 5 000 ₽");
+    }
 
-	useEffect(() => {
-		const { price: newPrice, breakdown: newBreakdown } = calculatePrice(
-			workType,
-			objectType,
-			area
-		)
-		setPrice(newPrice)
-		setBreakdown(newBreakdown)
-	}, [workType, objectType, area, calculatePrice])
+    sum = Math.ceil(sum / 100) * 100;
 
-	const getWorkTypeLabel = () => {
-		return workTypes.find(w => w.id === workType)?.label || workTypes[0].label
-	}
+    return { total: sum, steps: breakdown };
+  }, [workType, objectType, area, needGarbage, material, currentConfig]);
 
-	const getObjectTypeLabel = () => {
-		return (
-			objectTypes.find(o => o.id === objectType)?.label || objectTypes[0].label
-		)
-	}
+  /* =======================
+     RENDER
+  ======================= */
+  return (
+    <section id="calc" className={cn(className)}>
+      <div className="sm:container mx-auto py-5 px-3">
+        <Title
+          title="Рассчитайте стоимость работ!"
+          className="text-[36px] sm:text-[50px] md:text-[56px] font-semibold mb-5"
+        />
 
-	const getRateDescription = () => {
-		return priceRates[workType as keyof typeof priceRates]?.description || ''
-	}
+        <div className="border border-black rounded-[20px] p-[30px]">
+          {/* Основные поля: Тип работ, Материал, Объект */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 mb-6 gap-6">
+            {/* Тип работ */}
+            <div className="lg:col-span-4">
+              <p className="text-2xl font-bold mb-4">Тип работ</p>
+              <div className="space-y-3">
+                {Object.entries(priceConfig).map(([id, cfg]) => (
+                  <label
+                    key={id}
+                    className="flex items-center gap-3 cursor-pointer group"
+                  >
+                    <input
+                      type="radio"
+                      className="sr-only peer"
+                      checked={workType === id}
+                      onChange={() => setWorkType(id as WorkType)}
+                    />
+                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)">
+                      {workType === id && (
+                        <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                      )}
+                    </div>
+                    <span className="group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)">
+                      {cfg.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
 
-	// Получение коэффициента площади для текущего значения
-	const getCurrentAreaCoefficient = () => {
-		for (const key in areaCoefficients) {
-			const range = areaCoefficients[key as keyof typeof areaCoefficients]
-			if (area >= range.min && area <= range.max) {
-				return range.coefficient
-			}
-		}
-		return 1.0
-	}
+            {/* Материал */}
+            {"materials" in currentConfig && materialKeys.length > 0 && (
+              <div className="lg:col-span-4">
+                <p className="text-2xl font-bold mb-4">Материал</p>
+                <div className="space-y-3">
+                  {materialKeys.map((id) => (
+                    <label
+                      key={id}
+                      className="flex items-center gap-3 cursor-pointer group"
+                    >
+                      <input
+                        type="radio"
+                        className="sr-only peer"
+                        checked={material === id}
+                        onChange={() => setMaterial(id)}
+                      />
+                      <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)">
+                        {material === id && (
+                          <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                        )}
+                      </div>
+                      <span className="group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)">
+                        {currentConfig.materials[id].label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
 
-	return (
-		<>
-			<section id='calc' className={cn(className)}>
-				<div className='sm:container mx-auto py-5 px-3'>
-					<Title
-						className='text-[36px] sm:text-[50px] md:text-[56px] font-semibold mb-5'
-						title='Рассчитайте стоимость работ!'
-					/>
-					<div className='border border-black rounded-[20px] p-[30px]'>
-						{/* Основные поля ввода */}
-						<div className='grid grid-cols-1 lg:grid-cols-12 mb-6 gap-6'>
-							{/* Тип работ */}
-							<div className='lg:col-span-4'>
-								<p className='text-2xl font-bold mb-4'>
-									Какой тип работ вас интересует?
-								</p>
-								<div className='space-y-3'>
-									{workTypes.map(type => (
-										<label
-											key={type.id}
-											className='flex items-center space-x-3 cursor-pointer group'
-										>
-											<div className='relative'>
-												<input
-													type='radio'
-													name='workType'
-													value={type.id}
-													checked={workType === type.id}
-													onChange={e => setWorkType(e.target.value)}
-													className='sr-only peer'
-												/>
-												<div className='w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center group-hover:border-(--accent-color1) transition-colors peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)'>
-													{workType === type.id && (
-														<div className='w-2.5 h-2.5 rounded-full bg-white'></div>
-													)}
-												</div>
-											</div>
-											<span className='text-lg group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)'>
-												{type.label}
-											</span>
-										</label>
-									))}
-								</div>
-							</div>
+            {/* Объект */}
+            <div className="lg:col-span-4">
+              <p className="text-2xl font-bold mb-4">Объект</p>
+              <div className="space-y-3">
+                {objectTypes.map((o) => (
+                  <label
+                    key={o.id}
+                    className="flex items-center gap-3 cursor-pointer group"
+                  >
+                    <input
+                      type="radio"
+                      className="sr-only peer"
+                      checked={objectType === o.id}
+                      onChange={() => setObjectType(o.id)}
+                    />
+                    <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)">
+                      {objectType === o.id && (
+                        <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                      )}
+                    </div>
+                    <span className="group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)">
+                      {o.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
 
-							{/* Объект работ */}
-							<div className='lg:col-span-4'>
-								<p className='text-2xl font-bold mb-4'>Объект работ</p>
-								<div className='space-y-3'>
-									{objectTypes.map(type => (
-										<label
-											key={type.id}
-											className='flex items-center space-x-3 cursor-pointer group'
-										>
-											<div className='relative'>
-												<input
-													type='radio'
-													name='objectType'
-													value={type.id}
-													checked={objectType === type.id}
-													onChange={e => setObjectType(e.target.value)}
-													className='sr-only peer'
-												/>
-												<div className='w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center group-hover:border-(--accent-color1) transition-colors peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)'>
-													{objectType === type.id && (
-														<div className='w-2.5 h-2.5 rounded-full bg-white'></div>
-													)}
-												</div>
-											</div>
-											<span className='text-lg group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)'>
-												{type.label}
-											</span>
-										</label>
-									))}
-								</div>
-							</div>
+          {/* Площадь — всегда внизу */}
+          <div className="mb-8">
+            <p className="text-2xl font-bold mb-4">Площадь</p>
+            <div className="space-y-4">
+              <input
+                type="range"
+                min={5}
+                max={500}
+                step={5}
+                value={area}
+                onChange={(e) => setArea(Number(e.target.value))}
+                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-(--accent-color1)"
+              />
+              <div className="rounded-[13px] bg-(--layer-color) p-6 text-center">
+                <span className="text-2xl font-bold">
+                  {area} <small>м²</small>
+                </span>
+              </div>
+            </div>
+          </div>
 
-							{/* Площадь помещения */}
-							<div className='lg:col-span-4'>
-								<p className='text-2xl font-bold mb-4'>Площадь помещения</p>
-								<div className='space-y-4'>
-									<div className='relative'>
-										<input
-											type='range'
-											min='10'
-											max='500'
-											step='5'
-											value={area}
-											onChange={e => setArea(Number(e.target.value))}
-											className='w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-(--accent-color1)'
-										/>
-										<div className='flex justify-between text-sm text-gray-500 mt-2'>
-											<span>10 м²</span>
-											<span>250 м²</span>
-											<span>500 м²</span>
-										</div>
-									</div>
-									<div className='rounded-[13px] bg-(--layer-color) p-6 text-center'>
-										<span className='text-2xl font-bold'>
-											{area} <small>м²</small>
-										</span>
-									</div>
-								</div>
-							</div>
-						</div>
+          {/* Вывоз мусора */}
+          <div className="mb-8">
+            <p className="text-2xl font-bold mb-4">Вывоз мусора</p>
+            <div className="flex gap-4">
+              {[false, true].map((v) => (
+                <label
+                  key={String(v)}
+                  className="flex items-center gap-3 cursor-pointer group"
+                >
+                  <input
+                    type="radio"
+                    className="sr-only peer"
+                    checked={needGarbage === v}
+                    onChange={() => setNeedGarbage(v)}
+                  />
+                  <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)">
+                    {needGarbage === v && (
+                      <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                    )}
+                  </div>
+                  <span className="group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)">
+                    {v ? "Да" : "Нет"}
+                  </span>
+                </label>
+              ))}
+            </div>
+          </div>
 
-						{/* Информационные блоки с тарифами и коэффициентами - внизу на одном уровне */}
-						<div className='grid grid-cols-1 lg:grid-cols-12 gap-6'>
-							{/* Блок тарифов для типа работ */}
-							{/* <div className='lg:col-span-4 p-4 bg-gray-50 rounded-lg border border-gray-200'>
-								<h3 className='text-lg font-semibold mb-2 text-(--accent-color1)'>
-									Тарифы работ
-								</h3>
-								<div className='space-y-2'>
-									<p className='text-sm text-gray-700'>
-										<span className='font-medium'>Текущий тариф:</span>{' '}
-										{getRateDescription()}
-									</p>
-									<p className='text-sm text-gray-700'>
-										<span className='font-medium'>Базовая ставка:</span>{' '}
-										{priceRates[workType as keyof typeof priceRates]?.baseRate}{' '}
-										₽/м²
-									</p>
-									<div className='pt-2 border-t border-gray-300'>
-										<p className='text-xs text-gray-600 font-medium mb-1'>
-											Все тарифы:
-										</p>
-										<ul className='text-xs text-gray-600 space-y-1'>
-											<li>• Перегородки: 300 ₽/м²</li>
-											<li>• Полы/стяжка: 250 ₽/м²</li>
-											<li>• Потолки: 150 ₽/м²</li>
-											<li>• Полный демонтаж: 600 ₽/м²</li>
-										</ul>
-									</div>
-								</div>
-							</div> */}
+          {/* Результаты */}
+          <div className="grid grid-cols-1 lg:grid-cols-14 gap-6">
+            <div className="lg:col-span-5 bg-(--layer-color) rounded-[20px] px-5 py-8">
+              <div className="mt-4">
+                <span className="text-xl xl:text-2xl text-(--accent-color1) font-semibold block">
+                  {area} м²
+                </span>
+                <span className="text-xl xl:text-2xl text-(--accent-color1) font-semibold block">
+                  {objectTypes.find((o) => o.id === objectType)?.label}
+                </span>
+                <span className="text-xl xl:text-2xl text-(--accent-color1) font-semibold block">
+                  {currentConfig.label}
+                </span>
+                {material &&
+                  "materials" in currentConfig &&
+                  material in currentConfig.materials && (
+                    <span className="text-xl xl:text-2xl text-(--accent-color1) font-semibold block">
+                      {currentConfig.materials[material].label}
+                    </span>
+                  )}
+                <div className="mt-6 p-4 bg-white/50 rounded-lg">
+                  <p className="text-lg font-semibold mb-2">Состав расчета:</p>
+                  <ul className="text-sm space-y-1">
+                    {steps.map((s, i) => (
+                      <li key={i} className="text-gray-700">
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
 
-							{/* Блок коэффициентов объекта */}
-							{/* <div className='lg:col-span-4 p-4 bg-gray-50 rounded-lg border border-gray-200'>
-								<h3 className='text-lg font-semibold mb-2 text-(--accent-color1)'>
-									Коэффициенты объекта
-								</h3>
-								<div className='space-y-2'>
-									<p className='text-sm text-gray-700'>
-										<span className='font-medium'>Текущий коэффициент:</span> ×
-										{objectCoefficients[
-											objectType as keyof typeof objectCoefficients
-										].toFixed(1)}
-									</p>
-									<p className='text-sm text-gray-700'>
-										<span className='font-medium'>Тип объекта:</span>{' '}
-										{objectCoefficients[
-											objectType as keyof typeof objectCoefficients
-										] > 1
-											? '(повышающий, сложность работ)'
-											: '(базовая ставка)'}
-									</p>
-									<div className='pt-2 border-t border-gray-300'>
-										<p className='text-xs text-gray-600 font-medium mb-1'>
-											Все коэффициенты:
-										</p>
-										<ul className='text-xs text-gray-600 space-y-1'>
-											<li>• Квартира: ×1.0 (базовая)</li>
-											<li>• Коммерческое: ×1.3 (+30%)</li>
-											<li>• Дом: ×1.1 (+10%)</li>
-											<li>• Производственное: ×1.5 (+50%)</li>
-										</ul>
-									</div>
-								</div>
-							</div> */}
-
-							{/* Блок коэффициентов площади */}
-							{/* <div className='lg:col-span-4 p-4 bg-gray-50 rounded-lg border border-gray-200'>
-								<h3 className='text-lg font-semibold mb-2 text-(--accent-color1)'>
-									Коэффициенты площади
-								</h3>
-								<div className='space-y-2'>
-									<p className='text-sm text-gray-700'>
-										<span className='font-medium'>Текущий коэффициент:</span> ×
-										{getCurrentAreaCoefficient().toFixed(1)}
-									</p>
-									<p className='text-sm text-gray-700'>
-										<span className='font-medium'>Площадь:</span> {area} м²
-										{area > 100
-											? ' (скидка за большой объем)'
-											: area < 50
-											? ' (надбавка за малый объем)'
-											: ' (базовая ставка)'}
-									</p>
-									<div className='pt-2 border-t border-gray-300'>
-										<p className='text-xs text-gray-600 font-medium mb-1'>
-											Диапазоны:
-										</p>
-										<ul className='text-xs text-gray-600 space-y-1'>
-											<li>• 10-50 м²: ×1.3 (+30%)</li>
-											<li>• 51-100 м²: ×1.0 (база)</li>
-											<li>• 101-200 м²: ×0.9 (-10%)</li>
-											<li>• 201-500 м²: ×0.8 (-20%)</li>
-										</ul>
-									</div>
-								</div>
-							</div>*/}
-						</div>
-
-						{/* Результаты расчета */}
-						<div className='grid grid-cols-1 lg:grid-cols-14 gap-6'>
-							<div className='lg:col-span-5 bg-(--layer-color) rounded-[20px] px-5 py-8'>
-								<div className='mt-4'>
-									<span className='text-xl xl:text-2xl text-(--accent-color1) font-semibold block'>
-										{area} м²
-									</span>
-									<span className='text-xl xl:text-2xl text-(--accent-color1) font-semibold block'>
-										{getObjectTypeLabel()}
-									</span>
-									<span className='text-xl xl:text-2xl text-(--accent-color1) font-semibold block'>
-										{getWorkTypeLabel()}
-									</span>
-									<div className='mt-6 p-4 bg-white/50 rounded-lg'>
-										<p className='text-lg font-semibold mb-2'>
-											Состав расчета:
-										</p>
-										<ul className='text-sm space-y-1'>
-											{breakdown.map((step, index) => (
-												<li key={index} className='text-gray-700'>
-													{step}
-												</li>
-											))}
-										</ul>
-									</div>
-								</div>
-							</div>
-							<div className='lg:col-span-9 bg-(--layer-color) rounded-[20px] grid grid-cols-1 md:grid-cols-2 px-5 py-8 gap-6 md:gap-0'>
-								<div className='flex flex-col items-center md:items-start gap-2 justify-center md:justify-start lg:justify-center'>
-									<div className='flex items-center gap-2'>
-										<span className='text-7xl xl:text-9xl font-bebas font-medium text-(--accent-color1)'>
-											{price.toLocaleString('ru-RU')}
-										</span>
-										<img
-											className='w-12 lg:w-[67px]'
-											src='/svg/rub.svg'
-											alt='rub'
-										/>
-									</div>
-									<p className='text-gray-600 text-lg mt-2'>
-										Итоговая стоимость работ
-									</p>
-									<p className='text-sm text-gray-500'>
-										*Расчет ориентировочный. Точную смету составит мастер после
-										осмотра
-									</p>
-								</div>
-								<div className='flex items-center justify-center'>
-									<Button
-										className='rounded-[15px] py-6 px-8 lg:px-11 bg-(--accent-color1) text-white text-xl xl:text-2xl font-semibold hover:bg-(--accent-color2) transition-colors cursor-pointer'
-										text='Отправить заявку'
-										onClick={handleOrderClick}
-									/>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</section>
-			<OrderModal
-				isOpen={isModalOpen}
-				onClose={() => setIsModalOpen(false)}
-				orderData={{
-					area,
-					objectType: getObjectTypeLabel(),
-					workType: getWorkTypeLabel(),
-					price,
-				}}
-			/>
-		</>
-	)
-}
+            <div className="lg:col-span-9 bg-(--layer-color) rounded-[20px] grid grid-cols-1 md:grid-cols-2 px-5 py-8 gap-6 md:gap-0">
+              <div className="flex flex-col items-center md:items-start gap-2 justify-center md:justify-start lg:justify-center">
+                <div className="flex items-center gap-2">
+                  <span className="text-7xl xl:text-9xl font-bebas font-medium text-(--accent-color1)">
+                    {total.toLocaleString("ru-RU")}
+                  </span>
+                  <img
+                    className="w-12 lg:w-[67px]"
+                    src="/svg/rub.svg"
+                    alt="руб"
+                  />
+                </div>
+                <p className="text-gray-600 text-lg mt-2">
+                  Итоговая стоимость работ
+                </p>
+              </div>
+              <div className="flex items-center justify-center">
+                <Button
+                  className="rounded-[15px] py-6 px-8 lg:px-11 bg-(--accent-color1) text-white text-xl xl:text-2xl font-semibold hover:bg-(--accent-color2) transition-colors cursor-pointer"
+                  text="Отправить заявку"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};

@@ -4,6 +4,8 @@ import { Montserrat, Wix_Madefor_Display } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import YandexMetrika from "@/components/YandexMetrika/YandexMetrika";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 
 const wix = Wix_Madefor_Display({
   variable: "--font-wix",
@@ -33,11 +35,6 @@ const bebas = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Демонтаж любой сложности",
-  description: "Профессиональный демонтаж в Кемерово и Кемеровской области",
-  alternates: {
-    canonical: "https://demontazh42.ru/",
-  },
   icons: {
     icon: [
       { rel: "icon", type: "image/svg+xml", url: "/favicon/favicon.ico" },
@@ -64,9 +61,11 @@ export default function RootLayout({
       <body
         className={`${bebas.variable} ${wix.variable} ${montserrat.variable} antialiased`}
       >
+        <Header />
         {children}
         <ScrollToTopButton />
         <YandexMetrika />
+        <Footer />
       </body>
     </html>
   );

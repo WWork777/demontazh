@@ -43,8 +43,8 @@ const priceConfig = {
   },
   sanitary: { label: "Демонтаж сантехники", rate: 2200 },
   electric: { label: "Демонтаж электрики", rate: 600 },
-  openings: { label: "Демонтаж окон, дверей, проемов", rate: 850 },
-  full: { label: "Комплексный демонтаж под бетон", rate: 1900 },
+  openings: { label: "Демонтаж окон, дверей", rate: 850 },
+  full: { label: "Комплексный демонтаж", rate: 1900 },
 };
 
 type WorkType = keyof typeof priceConfig;

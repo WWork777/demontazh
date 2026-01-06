@@ -60,9 +60,9 @@ type ObjectType = (typeof objectTypes)[number]["id"];
 
 const objectCoeff: Record<ObjectType, number> = {
   apartment: 1,
-  house: 1.1,
+  house: 1,
   commercial: 1.3,
-  industrial: 1.5,
+  industrial: 1.3,
 };
 
 const areaCoeff = [
@@ -111,12 +111,20 @@ export const Calculator: React.FC<Props> = ({ className }) => {
     let baseRate = 0;
 
     // Проверяем, что currentConfig имеет материалы
-    if ("materials" in currentConfig && material) {
+    if ("materials" in currentConfig && currentConfig.materials) {
       const materials = currentConfig.materials as Record<
         string,
         { label: string; rate: number }
       >;
-      baseRate = materials[material].rate;
+
+      if (material && material in materials) {
+        baseRate = materials[material].rate;
+      } else {
+        // Если material не выбран или устарел, берем первый доступный
+        const firstKey = Object.keys(materials)[0];
+        baseRate = materials[firstKey].rate;
+        setMaterial(firstKey); // обновляем состояние
+      }
     } else if ("rate" in currentConfig) {
       baseRate = currentConfig.rate;
     }

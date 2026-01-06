@@ -45,7 +45,7 @@ const priceConfig = {
   electric: { label: "Демонтаж электрики", rate: 600 },
   openings: { label: "Демонтаж окон, дверей, проемов", rate: 850 },
   full: { label: "Комплексный демонтаж под бетон", rate: 1900 },
-} as const;
+};
 
 type WorkType = keyof typeof priceConfig;
 
@@ -91,9 +91,9 @@ export const Calculator: React.FC<Props> = ({ className }) => {
         >)
       : [];
 
-  const [material, setMaterial] = useState<
-    (typeof materialKeys)[number] | null
-  >(materialKeys[0] ?? null);
+  const [material, setMaterial] = useState<string | null>(
+    materialKeys[0] ?? null
+  );
 
   // Обновляем материал при смене типа работы
   useEffect(() => {
@@ -110,13 +110,13 @@ export const Calculator: React.FC<Props> = ({ className }) => {
   const { total, steps } = useMemo(() => {
     let baseRate = 0;
 
-    // Безопасно берем rate
-    if (
-      "materials" in currentConfig &&
-      material &&
-      material in currentConfig.materials
-    ) {
-      baseRate = currentConfig.materials[material].rate;
+    // Проверяем, что currentConfig имеет материалы
+    if ("materials" in currentConfig && material) {
+      const materials = currentConfig.materials as Record<
+        string,
+        { label: string; rate: number }
+      >;
+      baseRate = materials[material].rate;
     } else if ("rate" in currentConfig) {
       baseRate = currentConfig.rate;
     }
@@ -214,27 +214,34 @@ export const Calculator: React.FC<Props> = ({ className }) => {
               <div className="lg:col-span-4">
                 <p className="text-2xl font-bold mb-4">Материал</p>
                 <div className="space-y-3">
-                  {materialKeys.map((id) => (
-                    <label
-                      key={id}
-                      className="flex items-center gap-3 cursor-pointer group"
-                    >
-                      <input
-                        type="radio"
-                        className="sr-only peer"
-                        checked={material === id}
-                        onChange={() => setMaterial(id)}
-                      />
-                      <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)">
-                        {material === id && (
-                          <div className="w-2.5 h-2.5 rounded-full bg-white" />
-                        )}
-                      </div>
-                      <span className="group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)">
-                        {currentConfig.materials[id].label}
-                      </span>
-                    </label>
-                  ))}
+                  {(materialKeys as string[]).map((id) => {
+                    // Приведение currentConfig.materials к известному типу
+                    const materials = currentConfig.materials as Record<
+                      string,
+                      { label: string; rate: number }
+                    >;
+                    return (
+                      <label
+                        key={id}
+                        className="flex items-center gap-3 cursor-pointer group"
+                      >
+                        <input
+                          type="radio"
+                          className="sr-only peer"
+                          checked={material === id}
+                          onChange={() => setMaterial(id)}
+                        />
+                        <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)">
+                          {material === id && (
+                            <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                          )}
+                        </div>
+                        <span className="group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)">
+                          {materials[id].label}
+                        </span>
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -334,7 +341,14 @@ export const Calculator: React.FC<Props> = ({ className }) => {
                   "materials" in currentConfig &&
                   material in currentConfig.materials && (
                     <span className="text-xl xl:text-2xl text-(--accent-color1) font-semibold block">
-                      {currentConfig.materials[material].label}
+                      {
+                        (
+                          currentConfig.materials as Record<
+                            string,
+                            { label: string; rate: number }
+                          >
+                        )[material].label
+                      }
                     </span>
                   )}
                 <div className="mt-6 p-4 bg-white/50 rounded-lg">

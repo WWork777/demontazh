@@ -286,6 +286,27 @@ export const Calculator: React.FC<Props> = ({ className }) => {
           {/* Площадь — всегда внизу */}
           <div className="mb-8 flex flex-col lg:flex-row gap-6">
             {/* Площадь */}
+
+            <div className="flex-2">
+              <p className="text-2xl font-bold mb-4">Площадь</p>
+              <div className="space-y-4">
+                <input
+                  type="range"
+                  min={5}
+                  max={500}
+                  step={5}
+                  value={area}
+                  onChange={(e) => setArea(Number(e.target.value))}
+                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-(--accent-color1)"
+                />
+                <div className="rounded-[13px] bg-(--layer-color) p-6 text-center">
+                  <span className="text-2xl font-bold">
+                    {area} <small>м²</small>
+                  </span>
+                </div>
+              </div>
+            </div>
+
             <div className="flex-1">
               <p className="text-2xl font-bold mb-4">Вывоз мусора</p>
               <div className="flex gap-4">
@@ -310,26 +331,6 @@ export const Calculator: React.FC<Props> = ({ className }) => {
                     </span>
                   </label>
                 ))}
-              </div>
-            </div>
-
-            <div className="flex-1">
-              <p className="text-2xl font-bold mb-4">Площадь</p>
-              <div className="space-y-4">
-                <input
-                  type="range"
-                  min={5}
-                  max={500}
-                  step={5}
-                  value={area}
-                  onChange={(e) => setArea(Number(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-(--accent-color1)"
-                />
-                <div className="rounded-[13px] bg-(--layer-color) p-6 text-center">
-                  <span className="text-2xl font-bold">
-                    {area} <small>м²</small>
-                  </span>
-                </div>
               </div>
             </div>
 

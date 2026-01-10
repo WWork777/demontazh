@@ -10,10 +10,36 @@ interface Props {
 }
 
 /* =======================
+   TYPES
+======================= */
+type MaterialItem = { label: string; rate: number };
+
+type AreaConfig = {
+  kind: "area";
+  label: string;
+  rate?: number; // для full
+  materials?: Record<string, MaterialItem>; // floors/walls/ceilings
+};
+
+type CountConfig = {
+  kind: "count";
+  label: string;
+  unitLabel: string;
+  qtyLabel: string;
+  rate: number;
+};
+
+type PriceConfigItem = AreaConfig | CountConfig;
+
+/* =======================
    PRICE CONFIG
+   kind:
+   - "area"  => rate * area(m²) + areaCoeff
+   - "count" => rate * qty(шт)  (areaCoeff НЕ применяется)
 ======================= */
 const priceConfig = {
   floors: {
+    kind: "area",
     label: "Демонтаж полов",
     materials: {
       concrete: { label: "Бетонная стяжка", rate: 1200 },
@@ -23,6 +49,7 @@ const priceConfig = {
     },
   },
   walls: {
+    kind: "area",
     label: "Демонтаж стен и перегородок",
     materials: {
       gkl: { label: "ГКЛ / легкие перегородки", rate: 500 },
@@ -33,6 +60,7 @@ const priceConfig = {
     },
   },
   ceilings: {
+    kind: "area",
     label: "Демонтаж потолков",
     materials: {
       gkl: { label: "ГКЛ", rate: 480 },
@@ -41,11 +69,36 @@ const priceConfig = {
       stretch: { label: "Натяжной потолок", rate: 170 },
     },
   },
-  sanitary: { label: "Демонтаж сантехники", rate: 2200 },
-  electric: { label: "Демонтаж электрики", rate: 600 },
-  openings: { label: "Демонтаж окон, дверей", rate: 850 },
-  full: { label: "Комплексный демонтаж", rate: 1900 },
-};
+
+  // считаем по штукам
+  openings: {
+    kind: "count",
+    label: "Демонтаж окон, дверей",
+    unitLabel: "шт",
+    qtyLabel: "Количество (шт)",
+    rate: 850,
+  },
+  sanitary: {
+    kind: "count",
+    label: "Демонтаж сантехники",
+    unitLabel: "шт",
+    qtyLabel: "Количество (шт)",
+    rate: 2200,
+  },
+  electric: {
+    kind: "count",
+    label: "Демонтаж электрики",
+    unitLabel: "шт",
+    qtyLabel: "Количество (шт)",
+    rate: 600,
+  },
+
+  full: {
+    kind: "area",
+    label: "Комплексный демонтаж",
+    rate: 1900,
+  },
+} satisfies Record<string, PriceConfigItem>;
 
 type WorkType = keyof typeof priceConfig;
 
@@ -73,63 +126,102 @@ const areaCoeff = [
 ];
 
 /* =======================
+   GARBAGE CONFIG
+======================= */
+const GARBAGE_BASE = 7000;
+const BAG_RATE = 60;
+
+/* =======================
+   TYPE GUARDS
+======================= */
+function hasMaterials(cfg: PriceConfigItem): cfg is AreaConfig & {
+  materials: Record<string, MaterialItem>;
+} {
+  return cfg.kind === "area" && !!cfg.materials;
+}
+
+function isCount(cfg: PriceConfigItem): cfg is CountConfig {
+  return cfg.kind === "count";
+}
+
+/* =======================
    COMPONENT
 ======================= */
 export const Calculator: React.FC<Props> = ({ className }) => {
   const [workType, setWorkType] = useState<WorkType>("floors");
   const [objectType, setObjectType] = useState<ObjectType>("apartment");
+
+  // area
   const [area, setArea] = useState(80);
+
+  // count (шт)
+  const [qty, setQty] = useState(1);
+  const [qtyDraft, setQtyDraft] = useState<string>("1");
+
+  // garbage
   const [needGarbage, setNeedGarbage] = useState(false);
+  const [garbageBagsService, setGarbageBagsService] = useState(false);
+  const [garbageFloorDraft, setGarbageFloorDraft] = useState<string>("1");
+  const [garbageBagsDraft, setGarbageBagsDraft] = useState<string>("10");
+
+  // modal
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [contactData, setContactData] = useState({
-    name: "",
-    phone: "",
-  });
+  const [contactData, setContactData] = useState({ name: "", phone: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [policyAccepted, setPolicyAccepted] = useState(false);
 
-  // Refs для автофокуса
   const nameInputRef = useRef<HTMLInputElement>(null);
   const phoneInputRef = useRef<HTMLInputElement>(null);
 
-  const currentConfig = priceConfig[workType];
+  const currentConfig: PriceConfigItem = priceConfig[workType];
 
-  // Состояние выбранного материала
-  const materialKeys =
-    "materials" in currentConfig
-      ? (Object.keys(currentConfig.materials) as Array<
-          keyof typeof currentConfig.materials
-        >)
-      : [];
+  const materialKeys = useMemo(() => {
+    if (hasMaterials(currentConfig))
+      return Object.keys(currentConfig.materials);
+    return [];
+  }, [currentConfig]);
 
   const [material, setMaterial] = useState<string | null>(
     materialKeys[0] ?? null
   );
 
-  // Обновляем материал при смене типа работы
+  // при смене workType — выбрать первый материал (если есть)
   useEffect(() => {
-    if (materialKeys.length > 0) {
-      setMaterial(materialKeys[0]);
+    if (hasMaterials(currentConfig)) {
+      const keys = Object.keys(currentConfig.materials);
+      setMaterial(keys[0] ?? null);
     } else {
       setMaterial(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workType]);
 
-  // Автофокус на поле имени при открытии модалки
+  // если count — поддерживаем draft
   useEffect(() => {
-    if (isModalOpen && nameInputRef.current) {
-      setTimeout(() => {
-        nameInputRef.current?.focus();
-      }, 100);
+    if (currentConfig.kind === "count") {
+      setQty((p) => (p < 1 ? 1 : p));
+      setQtyDraft((p) => (p === "" ? "1" : p));
+    }
+  }, [currentConfig.kind]);
+
+  // если мусор выключили — сброс допов
+  useEffect(() => {
+    if (!needGarbage) {
+      setGarbageBagsService(false);
+      setGarbageFloorDraft("1");
+      setGarbageBagsDraft("10");
+    }
+  }, [needGarbage]);
+
+  // autofocus
+  useEffect(() => {
+    if (isModalOpen) {
+      const t = setTimeout(() => nameInputRef.current?.focus(), 100);
+      return () => clearTimeout(t);
     }
   }, [isModalOpen]);
 
-  /* =======================
-     CALCULATION
-  ======================= */
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
+  const handleOpenModal = () => setIsModalOpen(true);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -142,50 +234,166 @@ export const Calculator: React.FC<Props> = ({ className }) => {
     const { name, value } = e.target;
 
     if (name === "phone") {
-      // Форматирование телефона
       const cleaned = value.replace(/\D/g, "");
       let formatted = cleaned;
 
       if (cleaned.length > 0) {
         formatted = "+7 ";
-        if (cleaned.length > 1) {
-          formatted += "(" + cleaned.substring(1, 4);
-        }
-        if (cleaned.length >= 5) {
-          formatted += ") " + cleaned.substring(4, 7);
-        }
-        if (cleaned.length >= 8) {
-          formatted += "-" + cleaned.substring(7, 9);
-        }
-        if (cleaned.length >= 10) {
-          formatted += "-" + cleaned.substring(9, 11);
-        }
+        if (cleaned.length > 1) formatted += "(" + cleaned.substring(1, 4);
+        if (cleaned.length >= 5) formatted += ") " + cleaned.substring(4, 7);
+        if (cleaned.length >= 8) formatted += "-" + cleaned.substring(7, 9);
+        if (cleaned.length >= 10) formatted += "-" + cleaned.substring(9, 11);
       }
 
-      setContactData((prev) => ({
-        ...prev,
-        [name]: formatted,
-      }));
+      setContactData((prev) => ({ ...prev, phone: formatted }));
+      return;
+    }
+
+    setContactData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+
+    if (e.currentTarget.name === "name") {
+      phoneInputRef.current?.focus();
+      return;
+    }
+    if (e.currentTarget.name === "phone") {
+      void handleSendOrder();
+      return;
+    }
+  };
+
+  // qty +/-
+  const incQty = () => {
+    const next = qty + 1;
+    setQty(next);
+    setQtyDraft(String(next));
+  };
+  const decQty = () => {
+    const next = Math.max(1, qty - 1);
+    setQty(next);
+    setQtyDraft(String(next));
+  };
+
+  const { total, steps, garbageExtra, materialLabelForUi } = useMemo(() => {
+    let baseRate = 0;
+    let matLabel: string | undefined;
+
+    if (hasMaterials(currentConfig)) {
+      const materials = currentConfig.materials;
+      const key =
+        material && material in materials
+          ? material
+          : Object.keys(materials)[0];
+
+      if (key) {
+        baseRate = materials[key].rate;
+        matLabel = materials[key].label;
+      }
     } else {
-      setContactData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      if (e.currentTarget.name === "name" && phoneInputRef.current) {
-        phoneInputRef.current.focus();
-      } else if (e.currentTarget.name === "phone") {
-        handleSendOrder();
+      if (currentConfig.kind === "count") {
+        baseRate = currentConfig.rate;
+      } else {
+        baseRate = currentConfig.rate ?? 0;
       }
     }
-  };
+
+    const breakdown: string[] = [];
+    let sum = 0;
+
+    if (currentConfig.kind === "area") {
+      sum = baseRate * area;
+      breakdown.push(`${baseRate} ₽/м² × ${area} м²`);
+    } else {
+      const q = Math.max(1, qty);
+      sum = baseRate * q;
+      breakdown.push(`${baseRate} ₽/${currentConfig.unitLabel} × ${q}`);
+    }
+
+    // коэф объекта
+    const objK = objectCoeff[objectType];
+    if (objK !== 1) {
+      const adjustment = sum * (objK - 1);
+      sum *= objK;
+      breakdown.push(
+        `Коэф. объекта (${objK.toFixed(1)}): ${adjustment.toLocaleString(
+          "ru-RU"
+        )} ₽`
+      );
+    }
+
+    // коэф площади — только area
+    if (currentConfig.kind === "area") {
+      const areaK =
+        areaCoeff.find((r) => area >= r.min && area <= r.max)?.k ?? 1;
+      if (areaK !== 1) {
+        const adjustment = sum * (areaK - 1);
+        sum *= areaK;
+        breakdown.push(
+          `Коэф. площади (${areaK.toFixed(1)}): ${adjustment.toLocaleString(
+            "ru-RU"
+          )} ₽`
+        );
+      }
+    }
+
+    // мусор
+    let garbageAdd = 0;
+
+    if (needGarbage) {
+      sum += GARBAGE_BASE;
+      garbageAdd += GARBAGE_BASE;
+      breakdown.push(
+        `Вывоз мусора: + ${GARBAGE_BASE.toLocaleString("ru-RU")} ₽`
+      );
+    }
+
+    if (needGarbage && garbageBagsService) {
+      const bags = Math.max(1, Number(garbageBagsDraft || "1"));
+      const floor = Math.max(1, Number(garbageFloorDraft || "1"));
+      const bagsCost = bags * BAG_RATE;
+
+      sum += bagsCost;
+      garbageAdd += bagsCost;
+
+      breakdown.push(
+        `Сбор/спуск/погрузка: ${bags} меш. × ${BAG_RATE} ₽ = ${bagsCost.toLocaleString(
+          "ru-RU"
+        )} ₽ (этаж ${floor})`
+      );
+    }
+
+    // минимум
+    // if (sum < 5000) {
+    //   sum = 5000;
+    //   breakdown.push("Минимальная стоимость работ: 5 000 ₽");
+    // }
+
+    // округление
+    sum = Math.ceil(sum / 100) * 100;
+
+    return {
+      total: sum,
+      steps: breakdown,
+      garbageExtra: garbageAdd,
+      materialLabelForUi: matLabel,
+    };
+  }, [
+    currentConfig,
+    material,
+    area,
+    qty,
+    objectType,
+    needGarbage,
+    garbageBagsService,
+    garbageFloorDraft,
+    garbageBagsDraft,
+  ]);
 
   const handleSendOrder = async () => {
-    // Валидация
     if (!contactData.name.trim()) {
       alert("Пожалуйста, введите ваше имя");
       nameInputRef.current?.focus();
@@ -199,49 +407,62 @@ export const Calculator: React.FC<Props> = ({ className }) => {
     }
 
     if (!policyAccepted) {
-      alert(
-        "Пожалуйста, подтвердите согласие с политикой обработки персональных данных"
-      );
+      alert("Пожалуйста, подтвердите согласие с политикой обработки данных");
       return;
     }
 
-    // Валидация телефона (минимум 10 цифр)
     const phoneDigits = contactData.phone.replace(/\D/g, "");
     if (phoneDigits.length < 11) {
-      // +7 и 10 цифр
-      alert("Пожалуйста, введите корректный номер телефона (10 цифр после +7)");
+      alert("Введите корректный номер телефона (10 цифр после +7)");
       phoneInputRef.current?.focus();
       return;
     }
 
+    if (needGarbage && garbageBagsService) {
+      const floor = Number(garbageFloorDraft);
+      const bags = Number(garbageBagsDraft);
+      if (!floor || floor < 1) return alert("Укажите этаж (минимум 1)");
+      if (!bags || bags < 1)
+        return alert("Укажите количество мешков (минимум 1)");
+    }
+
     setIsSubmitting(true);
 
-    const materialLabel =
-      material && "materials" in currentConfig
-        ? (
-            currentConfig.materials as Record<
-              string,
-              { label: string; rate: number }
-            >
-          )[material]?.label
-        : undefined;
+    const objectLabel =
+      objectTypes.find((o) => o.id === objectType)?.label || "Не указано";
+
+    const sizeLine =
+      currentConfig.kind === "area"
+        ? `📏 Площадь: ${area} м²\n`
+        : `🔢 Количество: ${Math.max(1, qty)} ${currentConfig.unitLabel}\n`;
+
+    const garbageText = needGarbage
+      ? `🗑️ Вывоз мусора: Да (+ ${GARBAGE_BASE.toLocaleString("ru-RU")} ₽)\n` +
+        (garbageBagsService
+          ? `📦 Сбор/спуск/погрузка: Да\n🏢 Этаж: ${Math.max(
+              1,
+              Number(garbageFloorDraft || "1")
+            )}\n🧺 Мешков: ${Math.max(
+              1,
+              Number(garbageBagsDraft || "1")
+            )} × ${BAG_RATE} ₽ = ${(
+              Math.max(1, Number(garbageBagsDraft || "1")) * BAG_RATE
+            ).toLocaleString("ru-RU")} ₽\n`
+          : `📦 Сбор/спуск/погрузка: Нет\n`)
+      : `🗑️ Вывоз мусора: Нет\n`;
 
     const message = `📋 Новая заявка на расчет
 
 👤 Имя: ${contactData.name}
 📞 Телефон: ${contactData.phone}
 
-🏠 Объект: ${
-      objectTypes.find((o) => o.id === objectType)?.label || "Не указано"
-    }
-📏 Площадь: ${area} м²
+🏠 Объект: ${objectLabel}
 🔨 Тип работ: ${currentConfig.label}
 ${
-  materialLabel ? `🧱 Материал: ${materialLabel}\n` : ""
-}💰 Стоимость: ${total.toLocaleString("ru-RU")} ₽
-${
-  needGarbage ? "🗑️ Вывоз мусора: Да (~ + 7 000 ₽)\n" : "🗑️ Вывоз мусора: Нет\n"
-}
+  materialLabelForUi ? `🧱 Материал: ${materialLabelForUi}\n` : ""
+}${sizeLine}${garbageText}
+💰 Итоговая стоимость: ${total.toLocaleString("ru-RU")} ₽
+
 📅 ${new Date().toLocaleString("ru-RU")}`;
 
     try {
@@ -252,10 +473,7 @@ ${
       });
 
       const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || "Ошибка отправки");
-      }
+      if (!response.ok) throw new Error(result.error || "Ошибка отправки");
 
       alert("Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.");
       handleCloseModal();
@@ -268,159 +486,9 @@ ${
     }
   };
 
-  const { total, steps } = useMemo(() => {
-    let baseRate = 0;
-
-    // Проверяем, что currentConfig имеет материалы
-    if ("materials" in currentConfig && currentConfig.materials) {
-      const materials = currentConfig.materials as Record<
-        string,
-        { label: string; rate: number }
-      >;
-
-      if (material && material in materials) {
-        baseRate = materials[material].rate;
-      } else {
-        // Если material не выбран или устарел, берем первый доступный
-        const firstKey = Object.keys(materials)[0];
-        baseRate = materials[firstKey].rate;
-        setMaterial(firstKey); // обновляем состояние
-      }
-    } else if ("rate" in currentConfig) {
-      baseRate = currentConfig.rate;
-    }
-
-    let sum = baseRate * area;
-    const breakdown: string[] = [];
-    breakdown.push(`${baseRate} ₽/м² × ${area} м²`);
-
-    // Коэффициент объекта
-    const objK = objectCoeff[objectType];
-    if (objK !== 1) {
-      const adjustment = sum * (objK - 1);
-      sum *= objK;
-      breakdown.push(
-        `Коэф. объекта (${objK.toFixed(1)}): ${adjustment.toLocaleString(
-          "ru-RU"
-        )} ₽`
-      );
-    }
-
-    // Коэффициент площади
-    const areaK = areaCoeff.find((r) => area >= r.min && area <= r.max)?.k ?? 1;
-    if (areaK !== 1) {
-      const adjustment = sum * (areaK - 1);
-      sum *= areaK;
-      breakdown.push(
-        `Коэф. площади (${areaK.toFixed(1)}): ${adjustment.toLocaleString(
-          "ru-RU"
-        )} ₽`
-      );
-    }
-
-    // Вывоз мусора больше не добавляется динамически - показывается отдельно
-
-    // Минимальная стоимость
-    if (sum < 5000) {
-      sum = 5000;
-      breakdown.push("Минимальная стоимость работ: 5 000 ₽");
-    }
-
-    sum = Math.ceil(sum / 100) * 100;
-
-    return { total: sum, steps: breakdown };
-  }, [workType, objectType, area, needGarbage, material, currentConfig]);
-
-  /* =======================
-     MODAL WINDOW
-  ======================= */
-  const Modal = () => {
-    if (!isModalOpen) return null;
-
-    return (
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-        onClick={(e) => {
-          if (e.target === e.currentTarget) {
-            handleCloseModal();
-          }
-        }}
-      >
-        <div className="bg-white rounded-[20px] max-w-md w-full p-8 relative">
-          <button
-            onClick={handleCloseModal}
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl"
-            disabled={isSubmitting}
-          >
-            ×
-          </button>
-
-          <h3 className="text-2xl font-bold mb-6 text-center">
-            Отправить заявку
-          </h3>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Ваше имя *
-              </label>
-              <input
-                ref={nameInputRef}
-                type="text"
-                name="name"
-                value={contactData.name}
-                onChange={handleInputChange}
-                onKeyPress={handleKeyPress}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--accent-color1) disabled:bg-gray-100"
-                placeholder="Введите ваше имя"
-                disabled={isSubmitting}
-                autoComplete="name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Номер телефона *
-              </label>
-              <input
-                ref={phoneInputRef}
-                type="tel"
-                name="phone"
-                value={contactData.phone}
-                onChange={handleInputChange}
-                onKeyPress={handleKeyPress}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--accent-color1) disabled:bg-gray-100"
-                placeholder="+7 (XXX) XXX-XX-XX"
-                disabled={isSubmitting}
-                autoComplete="tel"
-              />
-            </div>
-
-            <div className="pt-4">
-              <Button
-                onClick={handleSendOrder}
-                disabled={isSubmitting}
-                className="w-full rounded-[15px] py-4 bg-(--accent-color1) text-white text-xl font-semibold hover:bg-(--accent-color2) transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? "Отправка..." : "Отправить заявку"}
-              </Button>
-            </div>
-
-            <p className="text-sm text-gray-500 text-center mt-4">
-              Нажимая кнопку, вы соглашаетесь с обработкой персональных данных
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  /* =======================
-     RENDER
-  ======================= */
   return (
     <section id="calc" className={cn(className)}>
-      {/* Модальное окно */}
+      {/* MODAL */}
       {isModalOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
@@ -452,7 +520,7 @@ ${
                   name="name"
                   value={contactData.name}
                   onChange={handleInputChange}
-                  onKeyDown={handleKeyPress as any} // лучше onKeyDown (см. ниже)
+                  onKeyDown={handleKeyDown}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--accent-color1) disabled:bg-gray-100"
                   placeholder="Введите ваше имя"
                   disabled={isSubmitting}
@@ -470,22 +538,12 @@ ${
                   name="phone"
                   value={contactData.phone}
                   onChange={handleInputChange}
-                  onKeyDown={handleKeyPress as any}
+                  onKeyDown={handleKeyDown}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-(--accent-color1) disabled:bg-gray-100"
                   placeholder="+7 (XXX) XXX-XX-XX"
                   disabled={isSubmitting}
                   autoComplete="tel"
                 />
-              </div>
-
-              <div className="pt-4">
-                <Button
-                  onClick={handleSendOrder}
-                  disabled={isSubmitting || !policyAccepted}
-                  className="w-full rounded-[15px] py-4 bg-(--accent-color1) text-white text-xl font-semibold hover:bg-(--accent-color2) transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? "Отправка..." : "Отправить заявку"}
-                </Button>
               </div>
 
               <div className="pt-2">
@@ -512,6 +570,16 @@ ${
                   </span>
                 </label>
               </div>
+
+              <div className="pt-4">
+                <Button
+                  onClick={handleSendOrder}
+                  disabled={isSubmitting || !policyAccepted}
+                  className="w-full rounded-[15px] py-4 bg-(--accent-color1) text-white text-xl font-semibold hover:bg-(--accent-color2) transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? "Отправка..." : "Отправить заявку"}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -524,7 +592,7 @@ ${
         />
 
         <div className="border border-black rounded-[20px] p-[30px]">
-          {/* Основные поля: Тип работ, Материал, Объект */}
+          {/* Тип работ / Материал / Объект */}
           <div className="grid grid-cols-1 lg:grid-cols-12 mb-6 gap-6">
             {/* Тип работ */}
             <div className="lg:col-span-4">
@@ -538,11 +606,11 @@ ${
                     <input
                       type="radio"
                       className="sr-only peer"
-                      checked={workType === id}
+                      checked={workType === (id as WorkType)}
                       onChange={() => setWorkType(id as WorkType)}
                     />
                     <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)">
-                      {workType === id && (
+                      {workType === (id as WorkType) && (
                         <div className="w-2.5 h-2.5 rounded-full bg-white" />
                       )}
                     </div>
@@ -555,38 +623,31 @@ ${
             </div>
 
             {/* Материал */}
-            {"materials" in currentConfig && materialKeys.length > 0 && (
+            {hasMaterials(currentConfig) && materialKeys.length > 0 && (
               <div className="lg:col-span-4">
                 <p className="text-2xl font-bold mb-4">Материал</p>
                 <div className="space-y-3">
-                  {(materialKeys as string[]).map((id) => {
-                    // Приведение currentConfig.materials к известному типу
-                    const materials = currentConfig.materials as Record<
-                      string,
-                      { label: string; rate: number }
-                    >;
-                    return (
-                      <label
-                        key={id}
-                        className="flex items-center gap-3 cursor-pointer group"
-                      >
-                        <input
-                          type="radio"
-                          className="sr-only peer"
-                          checked={material === id}
-                          onChange={() => setMaterial(id)}
-                        />
-                        <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)">
-                          {material === id && (
-                            <div className="w-2.5 h-2.5 rounded-full bg-white" />
-                          )}
-                        </div>
-                        <span className="group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)">
-                          {materials[id].label}
-                        </span>
-                      </label>
-                    );
-                  })}
+                  {materialKeys.map((id) => (
+                    <label
+                      key={id}
+                      className="flex items-center gap-3 cursor-pointer group"
+                    >
+                      <input
+                        type="radio"
+                        className="sr-only peer"
+                        checked={material === id}
+                        onChange={() => setMaterial(id)}
+                      />
+                      <div className="w-6 h-6 rounded-full border-2 border-gray-300 flex items-center justify-center peer-checked:border-(--accent-color1) peer-checked:bg-(--accent-color1)">
+                        {material === id && (
+                          <div className="w-2.5 h-2.5 rounded-full bg-white" />
+                        )}
+                      </div>
+                      <span className="group-hover:text-(--accent-color1) transition-colors peer-checked:text-(--accent-color1)">
+                        {currentConfig.materials[id].label}
+                      </span>
+                    </label>
+                  ))}
                 </div>
               </div>
             )}
@@ -620,31 +681,94 @@ ${
             </div>
           </div>
 
-          {/* Площадь — всегда внизу */}
+          {/* Размер + мусор */}
           <div className="mb-8 flex flex-col lg:flex-row gap-6">
-            {/* Площадь */}
+            {/* Площадь / Кол-во */}
             <div className="flex-2">
-              <p className="text-2xl font-bold mb-4">Площадь</p>
-              <div className="space-y-4">
-                <input
-                  type="range"
-                  min={5}
-                  max={500}
-                  step={5}
-                  value={area}
-                  onChange={(e) => setArea(Number(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-(--accent-color1)"
-                />
-                <div className="rounded-[13px] bg-(--layer-color) p-6 text-center">
-                  <span className="text-2xl font-bold">
-                    {area} <small>м²</small>
-                  </span>
-                </div>
-              </div>
+              {currentConfig.kind === "area" ? (
+                <>
+                  <p className="text-2xl font-bold mb-4">Площадь</p>
+                  <div className="space-y-4">
+                    <input
+                      type="range"
+                      min={5}
+                      max={500}
+                      step={5}
+                      value={area}
+                      onChange={(e) => setArea(Number(e.target.value))}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-(--accent-color1)"
+                    />
+                    <div className="rounded-[13px] bg-(--layer-color) p-6 text-center">
+                      <span className="text-2xl font-bold">
+                        {area} <small>м²</small>
+                      </span>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-2xl font-bold mb-4">
+                    {currentConfig.qtyLabel}
+                  </p>
+
+                  <div className="rounded-[13px] bg-(--layer-color) p-6">
+                    <div className="flex items-center gap-3 justify-between">
+                      <button
+                        type="button"
+                        onClick={decQty}
+                        className="w-10 h-10 rounded-lg border-2 border-gray-300 flex items-center justify-center hover:bg-white/60"
+                      >
+                        <span className="text-xl font-bold">-</span>
+                      </button>
+
+                      <div className="flex-1 max-w-[240px]">
+                        <input
+                          type="number"
+                          min={1}
+                          inputMode="numeric"
+                          value={qtyDraft}
+                          onChange={(e) => {
+                            const raw = e.target.value;
+                            setQtyDraft(raw);
+                            if (raw === "") return;
+                            const n = Number(raw);
+                            if (!Number.isNaN(n)) setQty(Math.max(1, n));
+                          }}
+                          onBlur={() => {
+                            if (qtyDraft === "") {
+                              setQty(1);
+                              setQtyDraft("1");
+                              return;
+                            }
+                            const n = Number(qtyDraft);
+                            const fixed = Number.isNaN(n) ? 1 : Math.max(1, n);
+                            setQty(fixed);
+                            setQtyDraft(String(fixed));
+                          }}
+                          className="w-full px-4 py-3 border border-gray-300 rounded-lg text-center text-xl font-bold focus:ring-2 focus:ring-(--accent-color1) focus:border-(--accent-color1) outline-none bg-white"
+                        />
+                        <div className="text-center text-sm text-gray-600 mt-2">
+                          Ед.: <strong>{currentConfig.unitLabel}</strong>
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={incQty}
+                        className="w-10 h-10 rounded-lg border-2 border-gray-300 flex items-center justify-center hover:bg-white/60"
+                      >
+                        <span className="text-xl font-bold">+</span>
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
+            {/* Мусор */}
             <div className="flex-1">
               <p className="text-2xl font-bold mb-4">Вывоз мусора</p>
+
               <div className="flex gap-4">
                 {[false, true].map((v) => (
                   <label
@@ -668,36 +792,116 @@ ${
                   </label>
                 ))}
               </div>
+
+              {needGarbage && (
+                <div className="mt-4 rounded-[13px] bg-(--layer-color) p-5">
+                  <div className="text-sm text-gray-700">
+                    Базово:{" "}
+                    <strong>+ {GARBAGE_BASE.toLocaleString("ru-RU")} ₽</strong>
+                  </div>
+
+                  <label className="flex items-start gap-3 cursor-pointer select-none mt-4">
+                    <input
+                      type="checkbox"
+                      checked={garbageBagsService}
+                      onChange={(e) => setGarbageBagsService(e.target.checked)}
+                      className="mt-1 h-4 w-4 rounded border-gray-300 accent-(--accent-color1)"
+                    />
+                    <span className="text-sm text-gray-700 leading-snug">
+                      Нужен сбор / спуск / погрузка мусора в мешках
+                      <span className="block text-xs text-gray-500 mt-1">
+                        Расчет: {BAG_RATE} ₽ за 1 мешок
+                      </span>
+                    </span>
+                  </label>
+
+                  {garbageBagsService && (
+                    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">
+                          Этаж *
+                        </label>
+                        <input
+                          type="number"
+                          min={1}
+                          inputMode="numeric"
+                          value={garbageFloorDraft}
+                          onChange={(e) => setGarbageFloorDraft(e.target.value)}
+                          onBlur={() => {
+                            const n = Number(garbageFloorDraft);
+                            const fixed = !n || n < 1 ? 1 : Math.floor(n);
+                            setGarbageFloorDraft(String(fixed));
+                          }}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-(--accent-color1) focus:border-(--accent-color1) outline-none bg-white"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium mb-2">
+                          Кол-во мешков *
+                        </label>
+                        <input
+                          type="number"
+                          min={1}
+                          inputMode="numeric"
+                          value={garbageBagsDraft}
+                          onChange={(e) => setGarbageBagsDraft(e.target.value)}
+                          onBlur={() => {
+                            const n = Number(garbageBagsDraft);
+                            const fixed = !n || n < 1 ? 1 : Math.floor(n);
+                            setGarbageBagsDraft(String(fixed));
+                          }}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-(--accent-color1) focus:border-(--accent-color1) outline-none bg-white"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2 text-sm text-gray-600">
+                        Доплата:{" "}
+                        <strong>
+                          {(
+                            Math.max(1, Number(garbageBagsDraft || "1")) *
+                            BAG_RATE
+                          ).toLocaleString("ru-RU")}{" "}
+                          ₽
+                        </strong>{" "}
+                        ({Math.max(1, Number(garbageBagsDraft || "1"))} ×{" "}
+                        {BAG_RATE} ₽)
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Результаты */}
+          {/* Итог */}
           <div className="grid grid-cols-1 lg:grid-cols-14 gap-6">
             <div className="lg:col-span-5 bg-(--layer-color) rounded-[20px] px-5 py-8">
               <div className="mt-4">
-                <span className="text-xl xl:text-2xl text-(--accent-color1) font-semibold block">
-                  {area} м²
-                </span>
+                {currentConfig.kind === "area" ? (
+                  <span className="text-xl xl:text-2xl text-(--accent-color1) font-semibold block">
+                    {area} м²
+                  </span>
+                ) : (
+                  <span className="text-xl xl:text-2xl text-(--accent-color1) font-semibold block">
+                    {Math.max(1, qty)} {currentConfig.unitLabel}
+                  </span>
+                )}
+
                 <span className="text-xl xl:text-2xl text-(--accent-color1) font-semibold block">
                   {objectTypes.find((o) => o.id === objectType)?.label}
                 </span>
+
                 <span className="text-xl xl:text-2xl text-(--accent-color1) font-semibold block">
                   {currentConfig.label}
                 </span>
-                {material &&
-                  "materials" in currentConfig &&
-                  material in currentConfig.materials && (
-                    <span className="text-xl xl:text-2xl text-(--accent-color1) font-semibold block">
-                      {
-                        (
-                          currentConfig.materials as Record<
-                            string,
-                            { label: string; rate: number }
-                          >
-                        )[material].label
-                      }
-                    </span>
-                  )}
+
+                {materialLabelForUi && (
+                  <span className="text-xl xl:text-2xl text-(--accent-color1) font-semibold block">
+                    {materialLabelForUi}
+                  </span>
+                )}
+
                 <div className="mt-6 p-4 bg-white/50 rounded-lg">
                   <p className="text-lg font-semibold mb-2">Состав расчета:</p>
                   <ul className="text-sm space-y-1">
@@ -707,6 +911,13 @@ ${
                       </li>
                     ))}
                   </ul>
+
+                  {needGarbage && (
+                    <div className="mt-3 text-sm text-gray-700">
+                      <strong>Мусор в расчете:</strong>{" "}
+                      {garbageExtra.toLocaleString("ru-RU")} ₽
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -723,15 +934,30 @@ ${
                     alt="руб"
                   />
                 </div>
+
                 {needGarbage && (
-                  <div className="text-lg xl:text-xl font-semibold text-gray-700 mt-1">
-                    ~ + 7 000 ₽ вывоз мусора
+                  <div className="text-lg xl:text-xl font-semibold text-gray-700 mt-1 text-center md:text-left">
+                    + {GARBAGE_BASE.toLocaleString("ru-RU")} ₽ вывоз мусора (до
+                    10м3)
+                    {garbageBagsService && (
+                      <span className="block text-base font-medium text-gray-600">
+                        +{" "}
+                        {(
+                          Math.max(1, Number(garbageBagsDraft || "1")) *
+                          BAG_RATE
+                        ).toLocaleString("ru-RU")}{" "}
+                        ₽ мешки (этаж{" "}
+                        {Math.max(1, Number(garbageFloorDraft || "1"))})
+                      </span>
+                    )}
                   </div>
                 )}
+
                 <p className="text-gray-600 text-lg mt-2">
                   Итоговая стоимость работ
                 </p>
               </div>
+
               <div className="flex items-center justify-center">
                 <Button
                   onClick={handleOpenModal}
@@ -742,6 +968,8 @@ ${
               </div>
             </div>
           </div>
+
+          {/* Конец */}
         </div>
       </div>
     </section>

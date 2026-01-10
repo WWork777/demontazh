@@ -3,6 +3,7 @@ import { Calculator } from "@/components/calculator";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { Hero } from "@/components/hero";
+import { PhotoEstimate } from "@/components/PhotoEstimate";
 import { Questions } from "@/components/questions";
 import { Reviews } from "@/components/reviews";
 import { Services } from "@/components/services";
@@ -41,6 +42,7 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <PhotoEstimate />
       <About />
       <Stages />
       <Services />

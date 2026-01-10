@@ -1,6 +1,7 @@
 // app/services/[slug]/page.tsx
 import React from "react";
 import { ServiceCalculator } from "@/components/service-calculator";
+import { BuildingDemolitionForm } from "@/components/building-demolition-form";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Title } from "@/components/ui/title";
 import { Metadata } from "next";
@@ -58,18 +59,25 @@ export async function generateMetadata({
     "demontazh-pola": `Демонтаж пола в Кемерово по доступным ценам. Быстро, качественно, с вывозом мусора. Калькулятор стоимости демонтажа пола онлайн. Работаем во всех районах Кемерово.`,
     "demontazh-sten": `Демонтаж стен и перегородок в Кемерово. Профессиональный снос кирпичных, бетонных и гипсокартонных стен. Рассчитайте стоимость демонтажа стен онлайн.`,
     "demontazh-potolkov": `Демонтаж потолков в Кемерово профессионально и аккуратно. Все виды потолочных конструкций. Рассчитайте стоимость демонтажа потолка прямо на сайте.`,
+    "demontazh-shtukaturki": `Демонтаж штукатурки и подготовительные работы в Кемерово. Удаление краски, обоев, шпаклевки со стен. Калькулятор стоимости демонтажа штукатурки онлайн.`,
+    "demontazh-plitki": `Демонтаж плитки и керамогранита со стен в Кемерово. Аккуратная работа без повреждения основания. Калькулятор стоимости демонтажа плитки онлайн.`,
+    "demontazh-stroenij": `Полный демонтаж строений любой сложности в Кемерово. Жилые и нежилые здания, с вывозом мусора и расчисткой территории. Заполните форму для расчета стоимости.`,
   };
 
   const defaultDescription = `${service.description} ${service.title} в Кемерово по выгодным ценам. Калькулятор стоимости онлайн. Работаем во всех районах Кемерово и Кузбассе.`;
 
   return {
-    title: `${service.title} в Кемерово 💎 Цены и калькулятор | Демонтажные работы Кузбасс`,
+    title: service.useForm 
+      ? `${service.title} в Кемерово 💎 Заявка на расчет | Демонтажные работы Кузбасс`
+      : `${service.title} в Кемерово 💎 Цены и калькулятор | Демонтажные работы Кузбасс`,
     description: serviceDescriptions[slug] || defaultDescription,
     keywords: keywords.join(", "),
 
     // Open Graph метатеги
     openGraph: {
-      title: `${service.title} в Кемерово | Цены и калькулятор`,
+      title: service.useForm
+        ? `${service.title} в Кемерово | Заявка на расчет`
+        : `${service.title} в Кемерово | Цены и калькулятор`,
       description: serviceDescriptions[slug] || defaultDescription,
       type: "website",
       locale: "ru_RU",
@@ -88,7 +96,9 @@ export async function generateMetadata({
     // Twitter метатеги
     twitter: {
       card: "summary_large_image",
-      title: `${service.title} в Кемерово | Калькулятор стоимости`,
+      title: service.useForm
+        ? `${service.title} в Кемерово | Заявка на расчет`
+        : `${service.title} в Кемерово | Калькулятор стоимости`,
       description: serviceDescriptions[slug] || defaultDescription,
       images: [service.image || "/img/twitter-kemerovo.jpg"],
     },
@@ -125,6 +135,52 @@ export async function generateMetadata({
 
 // Функция для генерации структурированных данных
 function generateServiceSchema(service: any, slug: string) {
+  // Для услуг с формой не генерируем offers
+  if (service.useForm) {
+    return {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      name: `${service.title} в Кемерово`,
+      description: service.description,
+      serviceType: service.title,
+      provider: {
+        "@type": "LocalBusiness",
+        name: "Демонтажные работы Кемерово",
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: "ул. Примерная, 123",
+          addressLocality: "Кемерово",
+          addressRegion: "Кемеровская область",
+          postalCode: "650000",
+          addressCountry: "RU",
+        },
+        telephone: "+7-3842-12-34-56",
+        email: "info@demontazh-kemerovo.ru",
+        openingHours: "Пн-Вс 8:00-22:00",
+        priceRange: "₽₽",
+        currenciesAccepted: "RUB",
+        paymentAccepted: "Наличные, Безналичный расчет",
+        areaServed: [
+          {
+            "@type": "City",
+            name: "Кемерово",
+          },
+        ],
+        geo: {
+          "@type": "GeoCoordinates",
+          latitude: "55.354968",
+          longitude: "86.087215",
+        },
+      },
+      areaServed: {
+        "@type": "City",
+        name: "Кемерово",
+      },
+      url: `https://demontazh-kemerovo.ru/services/${slug}`,
+      image: service.image || "/img/logo.jpg",
+    };
+  }
+
   const offers = service.services.map((item: any, index: number) => ({
     "@type": "Offer",
     name: item.name,
@@ -279,12 +335,18 @@ export default async function ServicePage({ params }: ServicePageProps) {
 
           {/* Гео-информация */}
 
-          {/* Калькулятор */}
+          {/* Калькулятор или Форма */}
           <div id="calc" className="mt-12">
-            <ServiceCalculator
-              serviceName={`${service.title} в Кемерово`}
-              services={service.services}
-            />
+            {service.useForm ? (
+              <BuildingDemolitionForm
+                serviceName={`${service.title} в Кемерово`}
+              />
+            ) : (
+              <ServiceCalculator
+                serviceName={`${service.title} в Кемерово`}
+                services={service.services}
+              />
+            )}
           </div>
 
           {/* Дополнительная информация о городе */}

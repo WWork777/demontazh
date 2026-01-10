@@ -14,4 +14,5 @@ export interface ServiceData {
   image: string;
   features: string[];
   slug: string;
+  useForm?: boolean; // Флаг для использования формы вместо калькулятора
 }

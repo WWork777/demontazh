@@ -3,16 +3,22 @@ import { ServiceData } from "../../types/services";
 import { demontazhPolaData } from "./demontazh-pola";
 import { demontazhStenData } from "./demontazh-sten";
 import { demontazhPotolkovData } from "./demontazh-potolkov";
+import { demontazhShtukaturkiData } from "./demontazh-shtukaturki";
+import { demontazhPlitkiData } from "./demontazh-plitki";
+import { demontazhStroenijData } from "./demontazh-stroenij";
 
 // Экспортируем все данные услуг
 export const servicesData: Record<string, ServiceData> = {
   "demontazh-pola": demontazhPolaData,
   "demontazh-sten": demontazhStenData,
   "demontazh-potolkov": demontazhPotolkovData,
+  "demontazh-shtukaturki": demontazhShtukaturkiData,
+  "demontazh-plitki": demontazhPlitkiData,
+  "demontazh-stroenij": demontazhStroenijData,
 };
 
 // Экспортируем отдельные константы для удобства
-export { demontazhPolaData, demontazhStenData, demontazhPotolkovData };
+export { demontazhPolaData, demontazhStenData, demontazhPotolkovData, demontazhShtukaturkiData, demontazhPlitkiData, demontazhStroenijData };
 
 // Функция для получения данных услуги по slug
 export function getServiceData(slug: string): ServiceData | null {

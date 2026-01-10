@@ -68,14 +68,14 @@ export const PhotoEstimate: React.FC<Props> = ({ className }) => {
                 <Button
                   className="w-full sm:w-auto px-6 lg:px-10 py-4 rounded-[14px] bg-(--accent-color2) text-white text-lg md:text-xl font-semibold hover:opacity-90 transition-opacity"
                   text="Написать в MAX"
-                  link="https://max.example.com"
+                  link="https://max.ru/u/f9LHodD0cOLRWHC-_DOVb72d1VtL70nRCmoCjc3TiUNBtuW_Cm4H1Q1_FWE"
                   icon={<IoChevronForwardSharp className="text-2xl" />}
                 />
 
                 <Button
                   className="w-full sm:w-auto px-6 lg:px-10 py-4 rounded-[14px] bg-(--accent-color1) text-white text-lg md:text-xl font-semibold hover:opacity-90 transition-opacity"
                   text="Написать в Telegram"
-                  link="https://t.me/your_username"
+                  link="https://t.me/Destroy142"
                   icon={<FaTelegramPlane className="text-2xl" />}
                 />
               </div>

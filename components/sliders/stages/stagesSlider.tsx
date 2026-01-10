@@ -62,12 +62,12 @@ const StagesSLider = forwardRef<StagesSLiderHandle, Props>(
           // spaceBetween={0}
           pagination={false}
           navigation={false}
-          autoplay={{
-            delay: 4000, // 4 секунды
-            disableOnInteraction: false,
-            pauseOnMouseEnter: true,
-            waitForTransition: true,
-          }}
+          // autoplay={{
+          //   delay: 4000, // 4 секунды
+          //   disableOnInteraction: false,
+          //   pauseOnMouseEnter: true,
+          //   waitForTransition: true,
+          // }}
           speed={1000} // 1 секунда анимации
           modules={[Navigation, Pagination, Autoplay]}
           className="overflow-visible"

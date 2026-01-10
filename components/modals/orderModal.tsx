@@ -46,7 +46,7 @@ ${orderData.materialLabel ? `🧱 Материал: ${orderData.materialLabel}\n
   };
 
   const sendToWhatsApp = () => {
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    const url = `https://max.ru/u/f9LHodD0cOLRWHC-_DOVb72d1VtL70nRCmoCjc3TiUNBtuW_Cm4H1Q1_FWE/?text=${encodeURIComponent(
       createMessage()
     )}`;
     window.open(url, "_blank");

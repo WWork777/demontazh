@@ -128,7 +128,10 @@ const areaCoeff = [
 /* =======================
    GARBAGE CONFIG
 ======================= */
-const GARBAGE_BASE = 7000;
+const GARBAGE_BASE_PRICE = 7000;
+const GARBAGE_AREA_UNIT = 30; // 30 м² = 7000 ₽
+const GARBAGE_QTY_UNIT = 50; // 50 шт = 7000 ₽
+
 const BAG_RATE = 60;
 
 /* =======================
@@ -278,120 +281,128 @@ export const Calculator: React.FC<Props> = ({ className }) => {
     setQtyDraft(String(next));
   };
 
-  const { total, steps, garbageExtra, materialLabelForUi } = useMemo(() => {
-    let baseRate = 0;
-    let matLabel: string | undefined;
+  const { total, steps, garbageExtra, materialLabelForUi, garbageBase } =
+    useMemo(() => {
+      let baseRate = 0;
+      let matLabel: string | undefined;
 
-    if (hasMaterials(currentConfig)) {
-      const materials = currentConfig.materials;
-      const key =
-        material && material in materials
-          ? material
-          : Object.keys(materials)[0];
+      if (hasMaterials(currentConfig)) {
+        const materials = currentConfig.materials;
+        const key =
+          material && material in materials
+            ? material
+            : Object.keys(materials)[0];
 
-      if (key) {
-        baseRate = materials[key].rate;
-        matLabel = materials[key].label;
-      }
-    } else {
-      if (currentConfig.kind === "count") {
-        baseRate = currentConfig.rate;
+        if (key) {
+          baseRate = materials[key].rate;
+          matLabel = materials[key].label;
+        }
       } else {
-        baseRate = currentConfig.rate ?? 0;
+        if (currentConfig.kind === "count") {
+          baseRate = currentConfig.rate;
+        } else {
+          baseRate = currentConfig.rate ?? 0;
+        }
       }
-    }
 
-    const breakdown: string[] = [];
-    let sum = 0;
+      const breakdown: string[] = [];
+      let sum = 0;
 
-    if (currentConfig.kind === "area") {
-      sum = baseRate * area;
-      breakdown.push(`${baseRate} ₽/м² × ${area} м²`);
-    } else {
-      const q = Math.max(1, qty);
-      sum = baseRate * q;
-      breakdown.push(`${baseRate} ₽/${currentConfig.unitLabel} × ${q}`);
-    }
+      if (currentConfig.kind === "area") {
+        sum = baseRate * area;
+        breakdown.push(`${baseRate} ₽/м² × ${area} м²`);
+      } else {
+        const q = Math.max(1, qty);
+        sum = baseRate * q;
+        breakdown.push(`${baseRate} ₽/${currentConfig.unitLabel} × ${q}`);
+      }
 
-    // коэф объекта
-    const objK = objectCoeff[objectType];
-    if (objK !== 1) {
-      const adjustment = sum * (objK - 1);
-      sum *= objK;
-      breakdown.push(
-        `Коэф. объекта (${objK.toFixed(1)}): ${adjustment.toLocaleString(
-          "ru-RU"
-        )} ₽`
-      );
-    }
-
-    // коэф площади — только area
-    if (currentConfig.kind === "area") {
-      const areaK =
-        areaCoeff.find((r) => area >= r.min && area <= r.max)?.k ?? 1;
-      if (areaK !== 1) {
-        const adjustment = sum * (areaK - 1);
-        sum *= areaK;
+      // коэф объекта
+      const objK = objectCoeff[objectType];
+      if (objK !== 1) {
+        const adjustment = sum * (objK - 1);
+        sum *= objK;
         breakdown.push(
-          `Коэф. площади (${areaK.toFixed(1)}): ${adjustment.toLocaleString(
+          `Коэф. объекта (${objK.toFixed(1)}): ${adjustment.toLocaleString(
             "ru-RU"
           )} ₽`
         );
       }
-    }
 
-    // мусор
-    let garbageAdd = 0;
+      // коэф площади — только area
+      if (currentConfig.kind === "area") {
+        const areaK =
+          areaCoeff.find((r) => area >= r.min && area <= r.max)?.k ?? 1;
+        if (areaK !== 1) {
+          const adjustment = sum * (areaK - 1);
+          sum *= areaK;
+          breakdown.push(
+            `Коэф. площади (${areaK.toFixed(1)}): ${adjustment.toLocaleString(
+              "ru-RU"
+            )} ₽`
+          );
+        }
+      }
 
-    if (needGarbage) {
-      sum += GARBAGE_BASE;
-      garbageAdd += GARBAGE_BASE;
-      breakdown.push(
-        `Вывоз мусора: + ${GARBAGE_BASE.toLocaleString("ru-RU")} ₽`
-      );
-    }
+      // мусор
+      let garbageAdd = 0;
 
-    if (needGarbage && garbageBagsService) {
-      const bags = Math.max(1, Number(garbageBagsDraft || "1"));
-      const floor = Math.max(1, Number(garbageFloorDraft || "1"));
-      const bagsCost = bags * BAG_RATE;
+      const baseGarbage =
+        currentConfig.kind === "area"
+          ? Math.ceil(Math.max(1, area) / GARBAGE_AREA_UNIT) *
+            GARBAGE_BASE_PRICE
+          : Math.ceil(Math.max(1, qty) / GARBAGE_QTY_UNIT) * GARBAGE_BASE_PRICE;
 
-      sum += bagsCost;
-      garbageAdd += bagsCost;
+      if (needGarbage) {
+        sum += baseGarbage;
+        garbageAdd += baseGarbage;
+        breakdown.push(
+          `Вывоз мусора: + ${baseGarbage.toLocaleString("ru-RU")} ₽`
+        );
+      }
 
-      breakdown.push(
-        `Сбор/спуск/погрузка: ${bags} меш. × ${BAG_RATE} ₽ = ${bagsCost.toLocaleString(
-          "ru-RU"
-        )} ₽ (этаж ${floor})`
-      );
-    }
+      if (needGarbage && garbageBagsService) {
+        const bags = Math.max(1, Number(garbageBagsDraft || "1"));
+        const floor = Math.max(1, Number(garbageFloorDraft || "1"));
+        const bagsCost = bags * BAG_RATE;
 
-    // минимум
-    // if (sum < 5000) {
-    //   sum = 5000;
-    //   breakdown.push("Минимальная стоимость работ: 5 000 ₽");
-    // }
+        sum += bagsCost;
+        garbageAdd += bagsCost;
 
-    // округление
-    sum = Math.ceil(sum / 100) * 100;
+        breakdown.push(
+          `Сбор/спуск/погрузка: ${bags} меш. × ${BAG_RATE} ₽ = ${bagsCost.toLocaleString(
+            "ru-RU"
+          )} ₽ (этаж ${floor})`
+        );
+      }
 
-    return {
-      total: sum,
-      steps: breakdown,
-      garbageExtra: garbageAdd,
-      materialLabelForUi: matLabel,
-    };
-  }, [
-    currentConfig,
-    material,
-    area,
-    qty,
-    objectType,
-    needGarbage,
-    garbageBagsService,
-    garbageFloorDraft,
-    garbageBagsDraft,
-  ]);
+      // минимум
+      // if (sum < 5000) {
+      //   sum = 5000;
+      //   breakdown.push("Минимальная стоимость работ: 5 000 ₽");
+      // }
+
+      // округление
+      sum = Math.ceil(sum / 100) * 100;
+
+      return {
+        total: sum,
+        steps: breakdown,
+        garbageExtra: garbageAdd,
+        materialLabelForUi: matLabel,
+        garbageBase: baseGarbage,
+      };
+    }, [
+      currentConfig,
+      material,
+      area,
+      qty,
+      objectType,
+      needGarbage,
+      garbageBagsService,
+      garbageFloorDraft,
+      garbageBagsDraft,
+    ]);
 
   const handleSendOrder = async () => {
     if (!contactData.name.trim()) {
@@ -437,7 +448,7 @@ export const Calculator: React.FC<Props> = ({ className }) => {
         : `🔢 Количество: ${Math.max(1, qty)} ${currentConfig.unitLabel}\n`;
 
     const garbageText = needGarbage
-      ? `🗑️ Вывоз мусора: Да (+ ${GARBAGE_BASE.toLocaleString("ru-RU")} ₽)\n` +
+      ? `🗑️ Вывоз мусора: Да (+ ${garbageBase.toLocaleString("ru-RU")} ₽)\n` +
         (garbageBagsService
           ? `📦 Сбор/спуск/погрузка: Да\n🏢 Этаж: ${Math.max(
               1,
@@ -797,7 +808,7 @@ ${
                 <div className="mt-4 rounded-[13px] bg-(--layer-color) p-5">
                   <div className="text-sm text-gray-700">
                     Базово:{" "}
-                    <strong>+ {GARBAGE_BASE.toLocaleString("ru-RU")} ₽</strong>
+                    <strong>+ {garbageBase.toLocaleString("ru-RU")} ₽</strong>
                   </div>
 
                   <label className="flex items-start gap-3 cursor-pointer select-none mt-4">
@@ -937,8 +948,7 @@ ${
 
                 {needGarbage && (
                   <div className="text-lg xl:text-xl font-semibold text-gray-700 mt-1 text-center md:text-left">
-                    + {GARBAGE_BASE.toLocaleString("ru-RU")} ₽ вывоз мусора (до
-                    10м3)
+                    + {garbageBase.toLocaleString("ru-RU")} ₽ вывоз мусора
                     {garbageBagsService && (
                       <span className="block text-base font-medium text-gray-600">
                         +{" "}

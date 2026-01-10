@@ -5,8 +5,19 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { message, photos } = body;
+    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+      return NextResponse.json(
+        {
+          error:
+            "Telegram бот не настроен. Настройте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID.",
+        },
+        { status: 500 }
+      );
+    }
+
+    const form = await request.formData();
+    const message = String(form.get("message") || "");
+    const photos = form.getAll("photos") as File[];
 
     if (!message) {
       return NextResponse.json(
@@ -15,56 +26,88 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Проверяем наличие токенов Telegram
-    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+    // 1) отправляем текст
+    const textResp = await fetch(
+      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text: message,
+        }),
+      }
+    );
+
+    const textData = await textResp.json();
+    if (!textResp.ok) {
+      console.error("Telegram sendMessage error:", textData);
       return NextResponse.json(
-        { error: "Telegram бот не настроен. Пожалуйста, настройте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID в переменных окружения." },
+        { error: textData?.description || "Ошибка отправки текста в Telegram" },
         { status: 500 }
       );
     }
 
-    // Отправляем в Telegram
-    try {
-      const telegramResponse = await fetch(
-        `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            chat_id: TELEGRAM_CHAT_ID,
-            text: message,
-            parse_mode: "HTML",
-          }),
-        }
+    // 2) если фото нет — ок
+    if (!photos.length) {
+      return NextResponse.json({ success: true });
+    }
+
+    // 3) одно фото -> sendPhoto
+    if (photos.length === 1) {
+      const tgForm = new FormData();
+      tgForm.append("chat_id", TELEGRAM_CHAT_ID);
+      tgForm.append("photo", photos[0], photos[0].name);
+
+      const r = await fetch(
+        `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`,
+        { method: "POST", body: tgForm }
       );
 
-      if (!telegramResponse.ok) {
-        const errorText = await telegramResponse.text();
-        console.error("Telegram API error:", errorText);
+      const data = await r.json();
+      if (!r.ok) {
+        console.error("Telegram sendPhoto error:", data);
         return NextResponse.json(
-          { error: "Ошибка при отправке в Telegram. Проверьте настройки бота." },
+          { error: data?.description || "Ошибка отправки фото в Telegram" },
           { status: 500 }
         );
       }
 
-      // Если есть фото, отправляем их тоже
-      // Примечание: отправка фото требует дополнительной настройки multipart/form-data
-      // Пока оставляем только текст, фото можно добавить позже при необходимости
-      if (photos && photos.length > 0) {
-        console.log(`Получено ${photos.length} фото, но отправка фото пока не реализована`);
-      }
+      return NextResponse.json({ success: true });
+    }
 
-      return NextResponse.json({
-        success: true,
-        message: "Заявка успешно отправлена в Telegram",
-      });
-    } catch (error) {
-      console.error("Error sending to Telegram:", error);
+    // 4) несколько фото -> sendMediaGroup (до 10)
+    const limited = photos.slice(0, 10);
+
+    const tgForm = new FormData();
+    tgForm.append("chat_id", TELEGRAM_CHAT_ID);
+
+    const media = limited.map((_, i) => ({
+      type: "photo",
+      media: `attach://file${i}`,
+    }));
+
+    tgForm.append("media", JSON.stringify(media));
+
+    limited.forEach((file, i) => {
+      tgForm.append(`file${i}`, file, file.name);
+    });
+
+    const r = await fetch(
+      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMediaGroup`,
+      { method: "POST", body: tgForm }
+    );
+
+    const data = await r.json();
+    if (!r.ok) {
+      console.error("Telegram sendMediaGroup error:", data);
       return NextResponse.json(
-        { error: "Ошибка при отправке в Telegram" },
+        { error: data?.description || "Ошибка отправки фото в Telegram" },
         { status: 500 }
       );
     }
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error processing request:", error);
     return NextResponse.json(
@@ -73,4 +116,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

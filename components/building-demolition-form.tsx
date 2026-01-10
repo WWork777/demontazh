@@ -29,7 +29,7 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
   const [photos, setPhotos] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [photoPreview, setPhotoPreview] = useState<string[]>([]);
-
+  const [consent, setConsent] = useState(false);
   const primaryColor = "#de7e48";
   const primaryHover = "#d26933";
 
@@ -48,7 +48,7 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
       const files = Array.from(e.target.files);
       const currentCount = photos.length;
       const remainingSlots = 10 - currentCount;
-      
+
       if (remainingSlots <= 0) {
         alert("Максимум 10 фотографий");
         return;
@@ -70,7 +70,7 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
   const removePhoto = (index: number) => {
     // Освобождаем URL удаляемого фото
     URL.revokeObjectURL(photoPreview[index]);
-    
+
     const newPhotos = photos.filter((_, i) => i !== index);
     const newPreviews = photoPreview.filter((_, i) => i !== index);
     setPhotos(newPhotos);
@@ -118,7 +118,9 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
 
 🚛 Вывоз строительного мусора: ${formData.wasteRemoval || "Не указано"}
 
-🌱 Расчистка/планировка территории: ${formData.territoryClearing || "Не указано"}
+🌱 Расчистка/планировка территории: ${
+      formData.territoryClearing || "Не указано"
+    }
 
 📍 Район: ${districtText || "Не указано"}
 
@@ -135,34 +137,26 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
       return;
     }
 
+    if (!consent) {
+      alert("Необходимо дать согласие на обработку персональных данных");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
       const message = formatFormData();
 
-      // Конвертируем фото в base64 для отправки (если есть)
-      const photoBase64: string[] = [];
-      if (photos.length > 0) {
-        const photoPromises = photos.map((photo) => {
-          return new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(photo);
-          });
-        });
-        const results = await Promise.all(photoPromises);
-        photoBase64.push(...results);
-      }
+      const fd = new FormData();
+      fd.append("message", message);
 
-      // Отправляем на сервер через API endpoint
+      photos.forEach((file) => {
+        fd.append("photos", file, file.name);
+      });
+
       const response = await fetch("/api/send-building-request", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: message,
-          photos: photoBase64,
-        }),
+        body: fd,
       });
 
       const result = await response.json();
@@ -171,12 +165,8 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
         throw new Error(result.error || "Ошибка отправки");
       }
 
-      // Показываем успешное сообщение
-      alert(
-        "Заявка успешно отправлена в Telegram! Мы свяжемся с вами в ближайшее время для уточнения деталей и расчета стоимости."
-      );
+      alert("Заявка успешно отправлена в Telegram!");
 
-      // Очищаем форму
       setFormData({
         buildingType: "",
         length: "",
@@ -193,9 +183,12 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
       });
       setPhotos([]);
       setPhotoPreview([]);
+      setConsent(false);
     } catch (error) {
       console.error("Error submitting form:", error);
-      alert("Произошла ошибка при отправке заявки. Пожалуйста, попробуйте еще раз.");
+      alert(
+        "Произошла ошибка при отправке заявки. Пожалуйста, попробуйте еще раз."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -203,7 +196,9 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
 
   return (
     <div
-      className={`bg-white rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl p-4 sm:p-6 border border-gray-100 ${className || ""}`}
+      className={`bg-white rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl p-4 sm:p-6 border border-gray-100 ${
+        className || ""
+      }`}
     >
       <div className="mb-6 sm:mb-8 pb-4 sm:pb-6 border-b border-gray-100">
         <h2 className="text-xl xs:text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
@@ -218,7 +213,8 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
         {/* 1. Тип здания */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            1. Здание какого типа планируется демонтировать? <span className="text-red-500">*</span>
+            1. Здание какого типа планируется демонтировать?{" "}
+            <span className="text-red-500">*</span>
           </label>
           <div className="flex flex-col sm:flex-row gap-3">
             <label className="flex items-center cursor-pointer">
@@ -460,7 +456,7 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
           </label>
           <input
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp"
             multiple
             onChange={handlePhotoChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100"
@@ -490,7 +486,8 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
         {/* Телефон */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Номер телефона для обратной связи <span className="text-red-500">*</span>
+            Номер телефона для обратной связи{" "}
+            <span className="text-red-500">*</span>
           </label>
           <input
             type="tel"
@@ -503,12 +500,35 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
           />
         </div>
 
+        <div className="flex items-start gap-2">
+          <input
+            type="checkbox"
+            id="consent"
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+            disabled={isSubmitting}
+            className="mt-1 w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500 disabled:opacity-60"
+          />
+          <label htmlFor="consent" className="text-sm text-gray-700">
+            Я даю согласие на{" "}
+            <a
+              href="/documents/privacy-policy.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-(--accent-color1) hover:underline"
+              onClick={(e) => e.stopPropagation()}
+            >
+              обработку персональных данных
+            </a>
+          </label>
+        </div>
+
         {/* Кнопка отправки */}
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || !consent}
           style={{
-            backgroundColor: isSubmitting ? "#ccc" : primaryColor,
+            backgroundColor: isSubmitting || !consent ? "#ccc" : primaryColor,
           }}
           className="w-full py-3 px-6 text-white font-medium rounded-lg hover:opacity-90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           onMouseEnter={(e) => {
@@ -528,4 +548,3 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
     </div>
   );
 };
-

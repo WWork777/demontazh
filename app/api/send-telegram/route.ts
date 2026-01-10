@@ -18,7 +18,10 @@ export async function POST(request: NextRequest) {
     // Проверяем наличие токенов Telegram
     if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
       return NextResponse.json(
-        { error: "Telegram бот не настроен. Пожалуйста, настройте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID в переменных окружения." },
+        {
+          error:
+            "Telegram бот не настроен. Пожалуйста, настройте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID в переменных окружения.",
+        },
         { status: 500 }
       );
     }
@@ -42,7 +45,9 @@ export async function POST(request: NextRequest) {
         const errorText = await telegramResponse.text();
         console.error("Telegram API error:", errorText);
         return NextResponse.json(
-          { error: "Ошибка при отправке в Telegram. Проверьте настройки бота." },
+          {
+            error: "Ошибка при отправке в Telegram. Проверьте настройки бота.",
+          },
           { status: 500 }
         );
       }
@@ -66,4 +71,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

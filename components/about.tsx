@@ -68,9 +68,7 @@ export const About: React.FC<Props> = ({ className }) => {
                       src={item.src}
                       alt={item.title}
                       className={cn(
-                        "absolute object-bottom-right bottom-0 right-0 h-[110%] xs:h-full sm:h-[75%] 2xl:h-[85%] max-w-full object-contain transition-transform duration-300 group-hover:scale-105",
-                        item.title === "ПРОФЕССИОНАЛЬНЫЙ ИНСТРУМЕНТ" &&
-                          "translate-y-10" // <-- ниже
+                        "absolute object-bottom-right bottom-0 right-0 h-[110%] xs:h-full sm:h-[75%] 2xl:h-[85%] max-w-full object-contain transition-transform duration-300 group-hover:scale-105"
                       )}
                     />
                   </div>

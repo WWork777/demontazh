@@ -34,7 +34,7 @@ const ConnectionModal = ({ isOpen, onClose }: ConnectionModalProps) => {
   const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}`;
   const email = "info@demontazh.ru";
   const address = "г. Кемерово";
-  const workHours = "Пн-Пт: 9:00-20:00";
+  const workHours = "Без выходных: 9:00-20:00";
 
   // Формирование сообщения
   const createMessage = () => {

@@ -33,7 +33,7 @@ const ConnectionModal = ({ isOpen, onClose }: ConnectionModalProps) => {
   const telegramLink = `https://t.me/${TELEGRAM_USER}`;
   const whatsappLink = `https://wa.me/${WHATSAPP_NUMBER}`;
   const email = "info@demontazh.ru";
-  const address = "г. Кемерово";
+  const address = "г. Кемерово, Балтийская 40";
   const workHours = "Без выходных: 9:00-20:00";
 
   // Формирование сообщения

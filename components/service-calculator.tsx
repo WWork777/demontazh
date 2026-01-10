@@ -687,7 +687,7 @@ ${selectedList || "—"}
 
           <button
             onClick={() => {
-              window.location.href = "tel:+74951234567";
+              window.location.href = "tel:+7 (905) 969 4966";
             }}
             style={{
               borderColor: darkColor,

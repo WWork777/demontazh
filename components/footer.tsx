@@ -49,7 +49,7 @@ export const Footer: React.FC<Props> = ({ className }) => {
       <footer
         className={cn(
           className,
-          "rounded-[20px] mx-3 lg:mx-8 xl:mx-16 bg-(--layer-color) mb-3 lg:mb-10"
+          "rounded-[20px] mx-3 lg:mx-8 xl:mx-16 bg-(--layer-color) mb-3 lg:mb-10",
         )}
       >
         <div className="sm:container mx-auto py-11 px-3">
@@ -161,7 +161,7 @@ export const Footer: React.FC<Props> = ({ className }) => {
                 <p className="text-sm text-gray-700 mb-2">
                   <strong>ИП Юрманова Валентина Валерьевна</strong>
                 </p>
-                <p className="text-xs text-gray-600">ИНН: 421502753701</p>
+                <p className="text-xs text-gray-600">ИНН: 422901548738</p>
                 <p className="text-xs text-gray-600">ОГРНИП: 325420500130941</p>
               </div>
 

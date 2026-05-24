@@ -76,7 +76,7 @@ const MapModal = ({ isOpen, onClose }: MapModalProps) => {
         ref={modalRef}
         className={cn(
           "relative w-full max-w-2xl border border-black rounded-[20px] bg-white",
-          "my-auto max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-4rem)] overflow-hidden"
+          "my-auto max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-4rem)] overflow-hidden",
         )}
         onClick={(e) => e.stopPropagation()}
       >
@@ -110,7 +110,7 @@ const MapModal = ({ isOpen, onClose }: MapModalProps) => {
         <div className="overflow-y-auto max-h-[calc(100vh-8rem)] sm:max-h-[calc(100vh-10rem)]">
           <div className="p-3 sm:p-4 space-y-4">
             {/* Яндекс.Карты через iframe */}
-            <div className="h-48 sm:h-64 w-full rounded-[10px] overflow-hidden border-2 border-gray-200 relative">
+            {/* <div className="h-48 sm:h-64 w-full rounded-[10px] overflow-hidden border-2 border-gray-200 relative">
               {!isIframeLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
                   <div className="text-center text-gray-500">
@@ -130,12 +130,12 @@ const MapModal = ({ isOpen, onClose }: MapModalProps) => {
                 onLoad={() => setIsIframeLoaded(true)}
                 title="Яндекс.Карта - Демонтаж в Кемерово и области"
               />
-            </div>
+            </div> */}
 
             {/* Контактная информация */}
             <div className="p-3 bg-(--layer-color) rounded-[10px] border border-gray-200">
               <div className="grid grid-cols-1 gap-3">
-                <div className="flex items-center gap-3">
+                {/* <div className="flex items-center gap-3">
                   <FaMapMarkedAlt className="text-(--accent-color1) size-4 shrink-0" />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-gray-500">Адрес</p>
@@ -143,7 +143,7 @@ const MapModal = ({ isOpen, onClose }: MapModalProps) => {
                       г. Кемерово, Балтийская 40
                     </p>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="flex items-center gap-3">
                   <FaPhone className="text-(--accent-color1) size-4 shrink-0" />
@@ -163,7 +163,7 @@ const MapModal = ({ isOpen, onClose }: MapModalProps) => {
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-gray-500">Часы работы</p>
                     <p className="text-sm font-semibold text-gray-800">
-                      Без выходных: 9:00-18:00
+                      Без выходных: 8.00 до 22.00
                     </p>
                     {/* <p className="text-xs text-gray-600 mt-0.5">
                       Сб-Вс: 10:00-16:00
@@ -206,7 +206,7 @@ const MapModal = ({ isOpen, onClose }: MapModalProps) => {
         {/* Фиксированные кнопки действий */}
         <div className="sticky bottom-0 bg-white p-3 sm:p-4 border-t border-gray-200 rounded-b-[20px]">
           <div className="space-y-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <a
                 href={`https://yandex.ru/maps/64/kemerovo/house/baltiyskaya_ulitsa_40/bE8YdgRnT0IEQFtvfX94d3piYg==/?ll=86.037673%2C55.396616&source=serp_navig&z=17.12`}
                 target="_blank"
@@ -223,7 +223,7 @@ const MapModal = ({ isOpen, onClose }: MapModalProps) => {
               >
                 {isMobile ? "Google Maps" : "Открыть в Google Maps"}
               </a>
-            </div>
+            </div> */}
             <a
               href={PHONE_NUMBER_SRC}
               className="block text-center py-2.5 px-4 rounded-[10px] bg-(--accent-color1) text-white font-medium hover:bg-(--accent-color2) transition-colors text-sm sm:text-base"
@@ -234,9 +234,9 @@ const MapModal = ({ isOpen, onClose }: MapModalProps) => {
 
           {/* Информация о конфиденциальности */}
           <div className="mt-3 pt-3 border-t border-gray-200">
-            <p className="text-xs text-gray-500 text-center">
+            {/* <p className="text-xs text-gray-500 text-center">
               Для точного построения маршрута используйте навигатор
-            </p>
+            </p> */}
           </div>
         </div>
       </div>

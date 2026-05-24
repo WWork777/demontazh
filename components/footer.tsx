@@ -91,12 +91,12 @@ export const Footer: React.FC<Props> = ({ className }) => {
             </div>
 
             {/* Средняя колонка - Форма обратной связи (по центру) */}
-            <div className="col-span-1 md:col-span-4 md:col-start-5">
+            {/* <div className="col-span-1 md:col-span-4 md:col-start-5">
               <h3 className="text-xl font-semibold mb-4 text-center md:text-left">
                 Форма обратной связи
               </h3>
               <ContactForm />
-            </div>
+            </div> */}
 
             {/* Правая колонка - Контакты (справа) */}
             <div className="col-span-1 md:col-span-4 md:col-start-10">
@@ -117,11 +117,22 @@ export const Footer: React.FC<Props> = ({ className }) => {
                 </div>
                 <div>
                   <a
-                    href="mailto:info@demontazh42.ru"
+                    href="tel:+79235358879"
+                    className="flex items-center md:justify-end gap-2 hover:text-(--accent-color1) transition-colors duration-300"
+                    aria-label="Позвонить по телефону"
+                  >
+                    <span className="md:text-lg font-medium">
+                      +7 (923) 535 8879
+                    </span>
+                  </a>
+                </div>
+                <div>
+                  <a
+                    href="mailto:shadrin_a17@mail.ru"
                     className="flex items-center md:justify-end gap-2 hover:text-(--accent-color1) transition-colors duration-300"
                   >
                     <span className="md:text-lg font-medium">
-                      info@demontazh42.ru
+                      shadrin_a17@mail.ru
                     </span>
                   </a>
                 </div>
@@ -136,7 +147,7 @@ export const Footer: React.FC<Props> = ({ className }) => {
                     <FaTelegramPlane className="text-3xl mr-1" />
                   </a>
                   <a
-                    href={`https://max.ru/u/f9LHodD0cOLRWHC-_DOVb72d1VtL70nRCmoCjc3TiUNBtuW_Cm4H1Q1_FWE`}
+                    href={`https://max.ru/u/f9LHodD0cOKXflHgYA2EqkQQF-ly8_3OZRnSY0ARt5HyBGnGXJwHf4yd1xE`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-(--accent-color1) text-white p-2 rounded-full hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center w-10 md:w-[45px] h-10 md:h-[45px]"
@@ -154,9 +165,8 @@ export const Footer: React.FC<Props> = ({ className }) => {
           </div>
 
           {/* Информация об ИП и документы */}
-          <div className="border-t border-gray-300 pt-6">
+          {/* <div className="border-t border-gray-300 pt-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Информация об ИП */}
               <div>
                 <p className="text-sm text-gray-700 mb-2">
                   <strong>ИП Юрманова Валентина Валерьевна</strong>
@@ -165,7 +175,6 @@ export const Footer: React.FC<Props> = ({ className }) => {
                 <p className="text-xs text-gray-600">ОГРНИП: 325420500130941</p>
               </div>
 
-              {/* Ссылки на документы */}
               <div className="flex flex-wrap items-center gap-6 md:gap-8">
                 <a
                   href="/documents/privacy-policy.pdf"
@@ -193,7 +202,7 @@ export const Footer: React.FC<Props> = ({ className }) => {
                 </a>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </footer>
       {/* Модальное окно с картой */}

@@ -91,7 +91,7 @@ export const Header: React.FC<Props> = ({ className }) => {
       const headerHeight = header.offsetHeight;
       document.documentElement.style.setProperty(
         "--header-height",
-        `${headerHeight}px`
+        `${headerHeight}px`,
       );
     }
   }, []);
@@ -212,7 +212,7 @@ export const Header: React.FC<Props> = ({ className }) => {
                 <FaTelegramPlane className="text-3xl mr-1" />
               </a>
               <a
-                href={`https://max.ru/u/f9LHodD0cOLRWHC-_DOVb72d1VtL70nRCmoCjc3TiUNBtuW_Cm4H1Q1_FWE`}
+                href={`https://max.ru/u/f9LHodD0cOKXflHgYA2EqkQQF-ly8_3OZRnSY0ARt5HyBGnGXJwHf4yd1xE`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-(--accent-color1) text-white p-2 rounded-full hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center w-10 md:w-[45px] h-10 md:h-[45px]"
@@ -325,7 +325,7 @@ export const Header: React.FC<Props> = ({ className }) => {
                         <FaTelegramPlane className="text-3xl mr-1" />
                       </a>
                       <a
-                        href={`https://max.ru/u/f9LHodD0cOLRWHC-_DOVb72d1VtL70nRCmoCjc3TiUNBtuW_Cm4H1Q1_FWE`}
+                        href={`https://max.ru/u/f9LHodD0cOKXflHgYA2EqkQQF-ly8_3OZRnSY0ARt5HyBGnGXJwHf4yd1xE`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-(--accent-color1) text-white p-2 rounded-full hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center w-10 md:w-[45px] h-10 md:h-[45px]"

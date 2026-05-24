@@ -38,7 +38,7 @@ export const ServiceCalculator: React.FC<ServiceCalculatorProps> = ({
 
   // Черновики ввода количества (строка: позволяет держать "" без превращения в 0)
   const [quantityDraft, setQuantityDraft] = useState<Record<string, string>>(
-    {}
+    {},
   );
 
   const [showCustomPrice, setShowCustomPrice] = useState<
@@ -148,7 +148,7 @@ export const ServiceCalculator: React.FC<ServiceCalculatorProps> = ({
 
     const validatedPrice = Math.max(
       service.minPrice ?? service.price,
-      Math.min(price, service.maxPrice ?? service.price * 2)
+      Math.min(price, service.maxPrice ?? service.price * 2),
     );
 
     setSelectedServices((prev) => ({
@@ -197,7 +197,7 @@ export const ServiceCalculator: React.FC<ServiceCalculatorProps> = ({
   };
 
   const selectedServicesCount = Object.keys(selectedServices).filter(
-    (name) => (selectedServices[name]?.quantity ?? 0) > 0
+    (name) => (selectedServices[name]?.quantity ?? 0) > 0,
   ).length;
 
   const handleSendCalculation = () => {
@@ -239,7 +239,7 @@ export const ServiceCalculator: React.FC<ServiceCalculatorProps> = ({
         const itemTotal = (data.quantity ?? 0) * price;
 
         return `• ${name}: ${data.quantity} ${unit} × ${formatCurrency(
-          price
+          price,
         )} = ${formatCurrency(itemTotal)}`;
       })
       .join("\n");
@@ -285,7 +285,7 @@ ${selectedList || "—"}
     <div
       className={cn(
         "bg-white rounded-xl sm:rounded-2xl shadow-lg sm:shadow-xl p-4 sm:p-6 border border-gray-100",
-        className
+        className,
       )}
     >
       {/* MODAL */}
@@ -451,7 +451,7 @@ ${selectedList || "—"}
                                 onChange={(e) =>
                                   handlePriceChange(
                                     service.name,
-                                    Number(e.target.value)
+                                    Number(e.target.value),
                                   )
                                 }
                                 style={{
@@ -580,7 +580,7 @@ ${selectedList || "—"}
                           const num = Number(raw);
                           handleQuantityChange(
                             service.name,
-                            Number.isNaN(num) ? 0 : num
+                            Number.isNaN(num) ? 0 : num,
                           );
                         }}
                         style={{
@@ -727,7 +727,7 @@ ${selectedList || "—"}
               borderColor: darkColor,
               color: darkColor,
             }}
-            className="flex-1 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-lg border-2 hover:bg-gray-900 hover:text-white transition-all duration-300 whitespace-nowrap"
+            className="flex-1 py-3 sm:py-4 rounded-xl font-bold text-sm sm:text-lg border-2 hover:bg-gray-300 hover:text-white transition-all duration-300 whitespace-nowrap"
           >
             Позвонить для уточнения
           </button>

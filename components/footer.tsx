@@ -16,6 +16,8 @@ interface Props {
   className?: string;
 }
 
+declare const ym: (id: number, action: string, goal: string) => void;
+
 export const Footer: React.FC<Props> = ({ className }) => {
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
 
@@ -109,6 +111,7 @@ export const Footer: React.FC<Props> = ({ className }) => {
                     href={PHONE_NUMBER_SRC}
                     className="flex items-center md:justify-end gap-2 hover:text-(--accent-color1) transition-colors duration-300"
                     aria-label="Позвонить по телефону"
+                    onClick={() => ym(109395904, 'reachGoal', 'phone')}
                   >
                     <span className="md:text-lg font-medium">
                       {PHONE_NUMBER}
@@ -120,6 +123,7 @@ export const Footer: React.FC<Props> = ({ className }) => {
                     href="tel:+79235358879"
                     className="flex items-center md:justify-end gap-2 hover:text-(--accent-color1) transition-colors duration-300"
                     aria-label="Позвонить по телефону"
+                    onClick={() => ym(109395904, 'reachGoal', 'phone')}
                   >
                     <span className="md:text-lg font-medium">
                       +7 (923) 535 8879
@@ -143,6 +147,7 @@ export const Footer: React.FC<Props> = ({ className }) => {
                     rel="noopener noreferrer"
                     className="bg-(--accent-color2) text-white p-2 rounded-full hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center w-10 md:w-[45px] h-10 md:h-[45px]"
                     aria-label="Наш Telegram"
+                    onClick={() => ym(109395904, 'reachGoal', 'telegram')}
                   >
                     <FaTelegramPlane className="text-3xl mr-1" />
                   </a>
@@ -152,6 +157,7 @@ export const Footer: React.FC<Props> = ({ className }) => {
                     rel="noopener noreferrer"
                     className="bg-(--accent-color1) text-white p-2 rounded-full hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center w-10 md:w-[45px] h-10 md:h-[45px]"
                     aria-label="Наш WhatsApp"
+                    onClick={() => ym(109395904, 'reachGoal', 'max')}
                   >
                     <img
                       src="/svg/max.svg"

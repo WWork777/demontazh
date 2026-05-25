@@ -150,6 +150,8 @@ function isCount(cfg: PriceConfigItem): cfg is CountConfig {
 /* =======================
    COMPONENT
 ======================= */
+declare const ym: (id: number, action: string, goal: string) => void;
+
 export const Calculator: React.FC<Props> = ({ className }) => {
   const [workType, setWorkType] = useState<WorkType>("floors");
   const [objectType, setObjectType] = useState<ObjectType>("apartment");
@@ -486,6 +488,7 @@ ${
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Ошибка отправки");
 
+      ym(109395904, 'reachGoal', 'calc');
       alert("Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.");
       handleCloseModal();
     } catch (error) {

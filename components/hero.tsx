@@ -10,6 +10,8 @@ interface Props {
   className?: string;
 }
 
+declare const ym: (id: number, action: string, goal: string) => void;
+
 export const Hero: React.FC<Props> = ({ className }) => {
   return (
     <section
@@ -67,6 +69,7 @@ export const Hero: React.FC<Props> = ({ className }) => {
                 className="xs:text-lg lg:text-xl px-5 lg:px-10 py-3 lg:py-5 rounded-[14px] bg-(--accent-color2) text-white font-semibold hover:opacity-90 transition-opacity"
                 text="СРОЧНЫЙ ВЫЕЗД"
                 link="tel:+7 (905) 969 4966"
+                onClick={() => ym(109395904, 'reachGoal', 'hero')}
               />
 
               <Button

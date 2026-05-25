@@ -22,6 +22,8 @@ interface Props {
   className?: string;
 }
 
+declare const ym: (id: number, action: string, goal: string) => void;
+
 export const Header: React.FC<Props> = ({ className }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -192,6 +194,7 @@ export const Header: React.FC<Props> = ({ className }) => {
                 href={PHONE_NUMBER_SRC}
                 className="flex items-center gap-2 text-gray-700 hover:text-(--accent-color1) transition-colors duration-300"
                 aria-label="Позвонить по телефону"
+                onClick={() => ym(109395904, 'reachGoal', 'phone')}
               >
                 <div
                   style={{ width: "45px", height: "45px" }}
@@ -208,6 +211,7 @@ export const Header: React.FC<Props> = ({ className }) => {
                 className="bg-(--accent-color2) text-white p-2 rounded-full hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center"
                 aria-label="Наш Telegram"
                 style={{ width: "45px", height: "45px" }}
+                onClick={() => ym(109395904, 'reachGoal', 'telegram')}
               >
                 <FaTelegramPlane className="text-3xl mr-1" />
               </a>
@@ -217,6 +221,7 @@ export const Header: React.FC<Props> = ({ className }) => {
                 rel="noopener noreferrer"
                 className="bg-(--accent-color1) text-white p-2 rounded-full hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center w-10 md:w-[45px] h-10 md:h-[45px]"
                 aria-label="Наш WhatsApp"
+                onClick={() => ym(109395904, 'reachGoal', 'max')}
               >
                 <img
                   src="/svg/max.svg"
@@ -294,7 +299,7 @@ export const Header: React.FC<Props> = ({ className }) => {
                   <a
                     href={PHONE_NUMBER_SRC}
                     className="flex items-center gap-4 text-gray-700 hover:text-(--accent-color1) transition-colors duration-300 mb-6"
-                    onClick={handleLinkClick}
+                    onClick={() => { handleLinkClick(); ym(109395904, 'reachGoal', 'phone'); }}
                   >
                     <div className="bg-gray-100 p-3 rounded-full">
                       <FaPhone className="text-xl" />
@@ -320,7 +325,7 @@ export const Header: React.FC<Props> = ({ className }) => {
                         className="bg-(--accent-color2) text-white p-3 rounded-full hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center"
                         aria-label="Наш Telegram"
                         style={{ width: "45px", height: "45px" }}
-                        onClick={handleLinkClick}
+                        onClick={() => { handleLinkClick(); ym(109395904, 'reachGoal', 'telegram'); }}
                       >
                         <FaTelegramPlane className="text-3xl mr-1" />
                       </a>
@@ -330,6 +335,7 @@ export const Header: React.FC<Props> = ({ className }) => {
                         rel="noopener noreferrer"
                         className="bg-(--accent-color1) text-white p-2 rounded-full hover:bg-gray-800 transition-colors duration-300 flex items-center justify-center w-10 md:w-[45px] h-10 md:h-[45px]"
                         aria-label="Наш WhatsApp"
+                        onClick={() => { handleLinkClick(); ym(109395904, 'reachGoal', 'max'); }}
                       >
                         <img
                           src="/svg/max.svg"

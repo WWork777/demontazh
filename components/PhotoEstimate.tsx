@@ -10,6 +10,8 @@ interface Props {
   className?: string;
 }
 
+declare const ym: (id: number, action: string, goal: string) => void;
+
 export const PhotoEstimate: React.FC<Props> = ({ className }) => {
   const imgSrc = "/img/photo_2026-01-10_15-39-48.jpg"; // твоя узкая/высокая
 
@@ -70,6 +72,7 @@ export const PhotoEstimate: React.FC<Props> = ({ className }) => {
                   text="Написать в MAX"
                   link="https://max.ru/u/f9LHodD0cOKXflHgYA2EqkQQF-ly8_3OZRnSY0ARt5HyBGnGXJwHf4yd1xE"
                   icon={<IoChevronForwardSharp className="text-2xl" />}
+                  onClick={() => ym(109395904, 'reachGoal', 'max')}
                 />
 
                 <Button
@@ -77,6 +80,7 @@ export const PhotoEstimate: React.FC<Props> = ({ className }) => {
                   text="Написать в Telegram"
                   link="https://t.me/The_sh_93"
                   icon={<FaTelegramPlane className="text-2xl" />}
+                  onClick={() => ym(109395904, 'reachGoal', 'telegram')}
                 />
               </div>
             </div>

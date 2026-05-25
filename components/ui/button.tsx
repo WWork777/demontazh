@@ -44,7 +44,7 @@ export const Button: React.FC<Props> = ({
 
     if (isExternal) {
       return (
-        <a href={link} className={classes} target={target} rel={rel}>
+        <a href={link} className={classes} target={target} rel={rel} onClick={onClick}>
           {content}
         </a>
       );

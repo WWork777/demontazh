@@ -249,7 +249,7 @@ export const ServiceCalculator: React.FC<ServiceCalculatorProps> = ({
 🏷️ Услуга: ${serviceName}
 
 👤 Имя: ${contact.name}
-📞 Телефон: ${contact.phone}
+📞 Телефон: +${contact.phone.replace(/\D/g, "")}
 
 📌 Выбранные работы:
 ${selectedList || "—"}

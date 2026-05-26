@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
           error:
             "Telegram бот не настроен. Настройте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID.",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -22,13 +22,13 @@ export async function POST(request: NextRequest) {
     if (!message) {
       return NextResponse.json(
         { error: "Сообщение обязательно" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // 1) отправляем текст
     const textResp = await fetch(
-      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+      `https://tg-proxy.parsikovevgenij470.workers.dev/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
           chat_id: TELEGRAM_CHAT_ID,
           text: message,
         }),
-      }
+      },
     );
 
     const textData = await textResp.json();
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       console.error("Telegram sendMessage error:", textData);
       return NextResponse.json(
         { error: textData?.description || "Ошибка отправки текста в Telegram" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -60,8 +60,8 @@ export async function POST(request: NextRequest) {
       tgForm.append("photo", photos[0], photos[0].name);
 
       const r = await fetch(
-        `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`,
-        { method: "POST", body: tgForm }
+        `https://tg-proxy.parsikovevgenij470.workers.dev/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`,
+        { method: "POST", body: tgForm },
       );
 
       const data = await r.json();
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
         console.error("Telegram sendPhoto error:", data);
         return NextResponse.json(
           { error: data?.description || "Ошибка отправки фото в Telegram" },
-          { status: 500 }
+          { status: 500 },
         );
       }
 
@@ -94,8 +94,8 @@ export async function POST(request: NextRequest) {
     });
 
     const r = await fetch(
-      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMediaGroup`,
-      { method: "POST", body: tgForm }
+      `https://tg-proxy.parsikovevgenij470.workers.dev/bot${TELEGRAM_BOT_TOKEN}/sendMediaGroup`,
+      { method: "POST", body: tgForm },
     );
 
     const data = await r.json();
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
       console.error("Telegram sendMediaGroup error:", data);
       return NextResponse.json(
         { error: data?.description || "Ошибка отправки фото в Telegram" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
     console.error("Error processing request:", error);
     return NextResponse.json(
       { error: "Ошибка при обработке заявки" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

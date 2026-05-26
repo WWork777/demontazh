@@ -187,7 +187,7 @@ export const Calculator: React.FC<Props> = ({ className }) => {
   }, [currentConfig]);
 
   const [material, setMaterial] = useState<string | null>(
-    materialKeys[0] ?? null
+    materialKeys[0] ?? null,
   );
 
   // при смене workType — выбрать первый материал (если есть)
@@ -326,8 +326,8 @@ export const Calculator: React.FC<Props> = ({ className }) => {
         sum *= objK;
         breakdown.push(
           `Коэф. объекта (${objK.toFixed(1)}): ${adjustment.toLocaleString(
-            "ru-RU"
-          )} ₽`
+            "ru-RU",
+          )} ₽`,
         );
       }
 
@@ -340,8 +340,8 @@ export const Calculator: React.FC<Props> = ({ className }) => {
           sum *= areaK;
           breakdown.push(
             `Коэф. площади (${areaK.toFixed(1)}): ${adjustment.toLocaleString(
-              "ru-RU"
-            )} ₽`
+              "ru-RU",
+            )} ₽`,
           );
         }
       }
@@ -359,7 +359,7 @@ export const Calculator: React.FC<Props> = ({ className }) => {
         sum += baseGarbage;
         garbageAdd += baseGarbage;
         breakdown.push(
-          `Вывоз мусора: + ${baseGarbage.toLocaleString("ru-RU")} ₽`
+          `Вывоз мусора: + ${baseGarbage.toLocaleString("ru-RU")} ₽`,
         );
       }
 
@@ -373,8 +373,8 @@ export const Calculator: React.FC<Props> = ({ className }) => {
 
         breakdown.push(
           `Сбор/спуск/погрузка: ${bags} меш. × ${BAG_RATE} ₽ = ${bagsCost.toLocaleString(
-            "ru-RU"
-          )} ₽ (этаж ${floor})`
+            "ru-RU",
+          )} ₽ (этаж ${floor})`,
         );
       }
 
@@ -454,10 +454,10 @@ export const Calculator: React.FC<Props> = ({ className }) => {
         (garbageBagsService
           ? `📦 Сбор/спуск/погрузка: Да\n🏢 Этаж: ${Math.max(
               1,
-              Number(garbageFloorDraft || "1")
+              Number(garbageFloorDraft || "1"),
             )}\n🧺 Мешков: ${Math.max(
               1,
-              Number(garbageBagsDraft || "1")
+              Number(garbageBagsDraft || "1"),
             )} × ${BAG_RATE} ₽ = ${(
               Math.max(1, Number(garbageBagsDraft || "1")) * BAG_RATE
             ).toLocaleString("ru-RU")} ₽\n`
@@ -467,7 +467,7 @@ export const Calculator: React.FC<Props> = ({ className }) => {
     const message = `📋 Новая заявка на расчет
 
 👤 Имя: ${contactData.name}
-📞 Телефон: ${contactData.phone}
+📞 Телефон: +${contactData.phone.replace(/\D/g, "")}
 
 🏠 Объект: ${objectLabel}
 🔨 Тип работ: ${currentConfig.label}
@@ -488,13 +488,13 @@ ${
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Ошибка отправки");
 
-      ym(109395904, 'reachGoal', 'calc');
+      ym(109395904, "reachGoal", "calc");
       alert("Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.");
       handleCloseModal();
     } catch (error) {
       console.error("Error sending order:", error);
       alert(
-        "Произошла ошибка при отправке заявки. Пожалуйста, попробуйте еще раз или свяжитесь с нами по телефону."
+        "Произошла ошибка при отправке заявки. Пожалуйста, попробуйте еще раз или свяжитесь с нами по телефону.",
       );
       setIsSubmitting(false);
     }

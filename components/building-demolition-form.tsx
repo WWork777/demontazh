@@ -34,7 +34,7 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
   const primaryHover = "#d26933";
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -124,7 +124,9 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
 
 📍 Район: ${districtText || "Не указано"}
 
-📞 Телефон: ${formData.phone || "Не указано"}
+📞 Телефон: ${
+      formData.phone ? `+${formData.phone.replace(/\D/g, "")}` : "Не указано"
+    }
 
 📅 Дата обращения: ${new Date().toLocaleString("ru-RU")}`;
   };
@@ -187,7 +189,7 @@ export const BuildingDemolitionForm: React.FC<BuildingDemolitionFormProps> = ({
     } catch (error) {
       console.error("Error submitting form:", error);
       alert(
-        "Произошла ошибка при отправке заявки. Пожалуйста, попробуйте еще раз."
+        "Произошла ошибка при отправке заявки. Пожалуйста, попробуйте еще раз.",
       );
     } finally {
       setIsSubmitting(false);

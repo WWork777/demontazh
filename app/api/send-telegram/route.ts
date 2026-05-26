@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     if (!message) {
       return NextResponse.json(
         { error: "Сообщение обязательно" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -22,14 +22,14 @@ export async function POST(request: NextRequest) {
           error:
             "Telegram бот не настроен. Пожалуйста, настройте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID в переменных окружения.",
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
     // Отправляем в Telegram
     try {
       const telegramResponse = await fetch(
-        `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+        `https://tg-proxy.parsikovevgenij470.workers.dev/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
             text: message,
             parse_mode: "HTML",
           }),
-        }
+        },
       );
 
       if (!telegramResponse.ok) {
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
           {
             error: "Ошибка при отправке в Telegram. Проверьте настройки бота.",
           },
-          { status: 500 }
+          { status: 500 },
         );
       }
 
@@ -60,14 +60,14 @@ export async function POST(request: NextRequest) {
       console.error("Error sending to Telegram:", error);
       return NextResponse.json(
         { error: "Ошибка при отправке в Telegram" },
-        { status: 500 }
+        { status: 500 },
       );
     }
   } catch (error) {
     console.error("Error processing request:", error);
     return NextResponse.json(
       { error: "Ошибка при обработке заявки" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
